@@ -1,0 +1,38 @@
+[
+  {
+    "cardId": "HUMAN_1",
+    "file": "Assets/Resources/TEMP_MasterpieceCards/Human/TEMP_Human_01_VanGogh_SelfPortrait.jpg",
+    "title": "Self-Portrait with a Straw Hat (obverse: The Potato Peeler)",
+    "artist": "Vincent van Gogh",
+    "year": "1887",
+    "isPublicDomain": true,
+    "sourceUrl": "https://www.metmuseum.org/art/collection/search/436532",
+    "imageUrl": "https://images.metmuseum.org/CRDImages/ep/original/DT1502_cropped2.jpg",
+    "license": "CC0 / The Met Open Access",
+    "licenseUrl": "https://www.metmuseum.org/policies/image-resources"
+  },
+  {
+    "cardId": "HUMAN_2",
+    "file": "Assets/Resources/TEMP_MasterpieceCards/Human/TEMP_Human_02_VanGogh_Roses.jpg",
+    "title": "Roses",
+    "artist": "Vincent van Gogh",
+    "year": "1890",
+    "isPublicDomain": true,
+    "sourceUrl": "https://www.metmuseum.org/art/collection/search/436534",
+    "imageUrl": "https://images.metmuseum.org/CRDImages/ep/original/DP346475.jpg",
+    "license": "CC0 / The Met Open Access",
+    "licenseUrl": "https://www.metmuseum.org/policies/image-resources"
+  },
+  {
+    "cardId": "HUMAN_3",
+    "file": "Assets/Resources/TEMP_MasterpieceCards/Human/TEMP_Human_03_Manet_MonetFamily.jpg",
+    "title": "The Monet Family in Their Garden at Argenteuil",
+    "artist": "Edouard Manet",
+    "year": "1874",
+    "isPublicDomain": true,
+    "sourceUrl": "https://www.metmuseum.org/art/collection/search/436965",
+    "imageUrl": "https://images.metmuseum.org/CRDImages/ep/original/DP-25465-001.jpg",
+    "license": "CC0 / The Met Open Access",
+    "licenseUrl": "https://www.metmuseum.org/policies/image-resources"
+  }
+]

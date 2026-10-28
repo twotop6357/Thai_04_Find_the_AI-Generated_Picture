@@ -1,0 +1,24 @@
+[
+  {
+    "id": "AI_1",
+    "name": "TEMP_AI_01_Cobalt_Riverside",
+    "prompt": "Use case: stylized-concept. Asset type: full-bleed oil painting for an art-origin classification game, a single original AI-generated artwork. Create an evocative museum-quality post-impressionist vertical landscape: a winding river beside a small old European village at cobalt-blue dusk, a tall cypress at the left, warm amber windows reflected in the water, expressive but convincing thick oil brushwork, subtle canvas grain, beautifully controlled luminous blue and gold. Original composition, not a copy of an existing painting. Required narrow portrait canvas aspect ratio 146:245 (width/height 0.596), ideally 1168 x 1960 pixels. Compose specifically for this tall card; keep every important element within the central 85% width and height so a tiny centered crop remains safe. The painting fills the complete canvas edge to edge. No picture frame, no mat, no wall, no border, no drop shadow, no lettering, no signature, no watermark, no collage. Rich detail and coherent spatial structure; not a photograph of a painting.",
+    "generationMode": "built-in image_gen",
+    "sourceKind": "AI-generated original temporary artwork"
+  },
+  {
+    "id": "AI_2",
+    "name": "TEMP_AI_02_Crimson_Scarf_Portrait",
+    "prompt": "Use case: stylized-concept. Asset type: full-bleed fine-art oil portrait for an art-origin classification game, a single original AI-generated artwork. Create a museum-quality original late-nineteenth-century oil portrait of a thoughtful young adult woman with dark hair, a crimson scarf and a dark emerald dress, softly illuminated from a window at the left, muted olive and ochre background. Beautiful restrained brushwork, believable anatomy, natural gaze, delicate warm face highlights and richly painted fabric, subtle aged canvas texture. Entirely fictional sitter and original composition, not an existing famous painting. Required narrow portrait canvas aspect ratio 146:245 (width/height 0.596), ideally 1168 x 1960 pixels. Show the head and upper torso with all key features within the central 85% width; allow a small safe crop. Paint the complete canvas edge to edge. No frame, no mat, no wall, no border, no lettering, no signature, no watermark, no collage, no photorealistic camera effects.",
+    "generationMode": "built-in image_gen",
+    "sourceKind": "AI-generated original temporary artwork"
+  },
+  {
+    "id": "AI_3",
+    "name": "TEMP_AI_03_Irises_And_Apricots",
+    "prompt": "Use case: stylized-concept. Asset type: full-bleed fine-art oil still life for an art-origin classification game, a single original AI-generated artwork. Create a beautiful original post-impressionist still life: several deep violet irises in a blue-gray earthenware pitcher, three ripe apricots and a folded ivory cloth on a walnut table, subdued sage wall, gentle morning window light. A masterfully balanced tall composition with tactile impasto, lively but deliberate brush strokes, soft reflected light and subtle canvas texture; coherent objects and botanical structure. Not a copy of any existing painting. Required narrow portrait canvas aspect ratio 146:245 (width/height 0.596), ideally 1168 x 1960 pixels. Keep vase, flowers and fruit fully inside the central 85% width for safe minimal cropping. Paint the whole canvas edge to edge. No picture frame, no mat, no wall around the canvas, no border, no text, no signature, no watermark, no collage, no photo of an artwork.",
+    "refinementPrompt": "Edit this existing painting into a WIDER portrait composition suitable for a game card. Keep the same oil-painted iris flowers, pitcher, all three apricots, cloth, lighting and painterly character. Recompose and extend the painted sage wall and tabletop sideways so that ALL flowers and ALL fruit fit comfortably within a standard 2:3 portrait canvas (1024 pixels wide by 1536 pixels high), with a generous 12% safe margin at left and right. This is deliberately less tall and narrow than the reference. Keep the complete flower tips and bottom fruit inside the image; no cropped flower or fruit. Paint to all four edges, no frame, no mat, no lettering, no signature, no watermark. The final image will receive a small presentation-only centered crop to a 146:245 portrait ratio, so make every important subject fit well inside that central region.",
+    "generationMode": "built-in image_gen",
+    "sourceKind": "AI-generated original temporary artwork"
+  }
+]

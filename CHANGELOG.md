@@ -1,6 +1,36 @@
 # Changelog
 관람객·운영자 경험에 영향을 주는 변경 사항을 기록합니다. 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따릅니다.
 
+## [2026-10-27]
+
+### Changed
+- 통계 안내 종료 후1번 입력으로2_Finish/VideoPanel에 이동하고4번영상_임시를 재생함. 첫 디코딩 프레임까지 화면을 가린 뒤 표시하며, 종료 시 마지막 프레임을 유지하고BlackBox0.25초페이드→카드제거팝업0.3초OutBack을 재생함. 단일VideoPlayer/GPU텍스처를 재사용하고 씬 해제 시 반환하여 재진입 잔상과 불필요한 프레임 캐시를 방지함.
+- StatisticsPanel을 제공된 시안의6열 배치·수평 누적 그래프로 조정함. 사진 마스크는 기존 비교판의 실제 내곽선을 따르고, 그래프는 하나의 둥근 마스크 안에서0.5초간 경계와 퍼센트가 함께 움직임. 지정된 기본 폰트의 볼드체로 수치를 표시하며, 기존 이미지에 포함된AI/Human글자는 유지하고 불필요한 텍스트는 제거함. 전체 종료 후 기존 하단 안내 이미지를0.25초 페이드인함.
+- ResultPanel의 사진을 카드 안쪽에 맞춘 마스크로 표시함. FeedbackArtwork는 원래 크기174×274를 유지하고 마스크 밖에서 위치·회전만 짧게 움직여 도장 효과를 재생함. 피드백 전체 종료 후 정답 수0~6의 ScoreArtwork를0.25초 페이드인하고, 이어 ButtonInstruction을0.25초 페이드인한 뒤1번 입력을 허용함. 삭제된 이전 정답 표시 참조와 여러 패널이 동시에 활성인 시작 상태를 처리함.
+- GamePanel 사진의 크기 연출을 제거하고 고정 크기에서 0.25초 페이드인/아웃하도록 변경함. ButtonInstruction은 6개 분류 리더가 모두 인식되면 0.25초 등장하고, 하나라도 인식이 끊기면 0.25초 퇴장 후 비활성화됨.
+- RFID 카드의 낙서 미리보기를 임시 명화6종(AI생성3/실제공개명화3)으로 교체하고 중앙/분류/통계 사진을 마스크 채우기+1%확대로 표시함. 이전 원본 낙서/카드ID/통계는 보존하며 자료·출처·프롬프트는 Resources/TEMP_MasterpieceCards에 기록함.
+- 이미지 결과화면에서 제거된 기존 점수/안내 텍스트 참조를 선택사항으로 처리해 작품 UI만 있어도 확정·점수·통계 전환이 정상 진행되도록 함.
+
+- GamePanel의7개사진마스크를배경프레임의실제내곽선으로보정하고배경정규화앵커에연결함. 중앙장식곡선까지반영하며사진/리더/연출은보존함. 기준1920×1080실제렌더에서추출내곽참조와7개모두픽셀차이0확인.
+
+- Title에서 1번을 짧게 누르면 Thai,2초유지하면English모드선택을영어로그로한번남기고Tutorial로이동함(실제UI는영어유지). Tutorial은화살표/가이드점멸→Card1확대이동·그림자제외정확안착→장식등장을75%속도로2회재생함. 첫회직후해당카드만0.5초페이드아웃하고원래위치에서0.5초페이드인해복원함. 보드/나머지카드는유지하며,두번째안착상태를0.5초유지한후Game으로자동이동함. 전환/재진입/중간취소를정리함.
+
+- 기존 사진 분류→점수→응답 통계 화면과 복귀에 공통 0.5초 퇴장/0.5초 등장 페이드를 적용하고 전환 중 연타를 차단함. 취소 후 이미 저장된 라운드는 다시 저장하지 않고 복구함.
+- 카드 제거 안내에 공통 암전 후 팝 연출을 적용함. 화면 해제 시 트윈을 정리하고 실제 RFID 인식 상태는 유지함.
+
+### Added
+- 사용자가 추가한 Thai_04 전용 UI31개만 사용해 점수0~6/정오답 카드/응답 비교판/제거 팝업을 대략적으로 연결함. 다른 프로젝트에서 반입했던 이미지는 제거함. En/Th 목록은 대상31개/53연결로 재작성(태국어 placeholder, 런타임 언어 적용은 미연결).
+- 리더별 사진 표시와 연출 중 확정 차단을 추가함. 사진 표시는 후속 요청에 따라 고정 크기 0.25초 페이드로 변경했으며, 제거·교체·재인식·패널 수명을 정리함.
+- 정오답 피드백과 점수·버튼 안내, 실제 AI/Human 응답률 연출을 추가함. 후속 요청으로 결과는 고정 크기 도장, 통계는0.5초 수평 누적으로 변경함. 기존 응답 저장·정답 판정·물리 리더 상태는 유지함.
+- Idle의 숫자1/숫자패드1 및 공개 PressButton1()을 Title→Tutorial→Game 공통 전환에 연결하고 Game 씬을 빌드 목록에 추가함. 세부 UI 배치는 사용자가 후속 조정함.
+
+## [2026-10-21]
+
+### Added
+- Added per-image AI/Human response charts with persistent device-local counts, response totals, and backup recovery. Accepted button 1 submissions add one vote per image; reopening charts adds none.
+- Added an English results screen submitted with button 1 after all six classification readers are filled, with total score, per-slot circle/cross feedback, session statistics, and board-clear retry. Keyboard 1 and numpad 1 share the future Arduino entry point.
+- RFID 중앙 리더에 놓은 카드의 원본 이미지를 GamePanel에 표시하고, AI·인간 분류 리더 각 세 칸에는 같은 이미지의 썸네일을 표시함. 카드 이동·교체·제거·모두 내리기에 맞춰 각 칸을 갱신하며 프로토타입 이미지 여섯 장을 사용함.
+
 ## [2026-10-16]
 
 ### Added
