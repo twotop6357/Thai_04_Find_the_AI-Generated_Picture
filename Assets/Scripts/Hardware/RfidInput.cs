@@ -50,7 +50,7 @@ namespace Hardware
     }
 
     /// <summary>
-    /// 카드 UID와 카드 종류의 매핑. 실제 카드 UID가 확정되면 이 값만 교체할 것.
+    /// 게임이 사용하는 카드 ID와 카드 종류. 실제 카드 HEX 값과의 연결은 RfidSettings.json에서 관리한다.
     /// </summary>
     public static class RfidCardCatalog
     {
@@ -66,8 +66,8 @@ namespace Hardware
     }
 
     /// <summary>
-    /// RFID 리더 입력의 단일 진입점. 실제 하드웨어 파서(시리얼 등)와 RfidTester가 모두
-    /// NotifyPlaced/NotifyRemoved로 입력을 넣고, 게임 로직은 OnCardChanged 구독 또는 GetCard 조회로만
+    /// RFID 리더 입력의 단일 진입점. RfidReaderService가 NotifyPlaced/NotifyRemoved로
+    /// 입력을 넣고, 게임 로직은 OnCardChanged 구독 또는 GetCard 조회로만
     /// 상태를 읽으므로 입력 출처가 바뀌어도 게임 코드는 수정할 필요가 없음.
     /// 리더당 카드 1장, 카드 1장은 한 리더에만 존재한다는 물리적 제약을 이 클래스가 보장함.
     /// </summary>

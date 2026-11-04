@@ -1,0 +1,13 @@
+{
+  "confirmedByUser": "2026-11-04",
+  "leftToRight": [
+    "HUMAN_1",
+    "AI_1",
+    "HUMAN_2",
+    "AI_2",
+    "HUMAN_3",
+    "AI_3"
+  ],
+  "source": "English E04-S02, browser ZIP export",
+  "note": "RFID IDs and truth categories unchanged. Tutorial uses the same six paintings with card surround."
+}

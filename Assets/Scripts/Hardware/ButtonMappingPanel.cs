@@ -1,3 +1,5 @@
+// 사용 중단: 버튼을 Input Manager의 NextButton으로 옮기면서 F8 재등록 UI를 쓰지 않는다. 삭제 대상.
+#if false
 using UnityEngine;
 
 namespace Hardware
@@ -71,3 +73,4 @@ namespace Hardware
         }
     }
 }
+#endif

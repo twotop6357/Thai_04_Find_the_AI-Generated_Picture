@@ -68,10 +68,7 @@ namespace Core
             }
             if (IsTransitioning) return;
 
-            if (SingleButtonInput.WasPressedThisFrame)
-            {
-                PressButton1();
-            }
+            // ClassificationButtonGesture distinguishes a short release from the Home hold.
         }
 
         /// <summary>Submit the board, or open response charts from the score screen. Call on Unity's main thread.</summary>

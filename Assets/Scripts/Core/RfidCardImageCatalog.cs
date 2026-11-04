@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace Core
 {
-    /// <summary>RFID 카드 ID를 임시 명화 카드 Sprite에 연결한다.</summary>
+    /// <summary>RFID 카드 ID를 피그마 카드 이미지에 연결한다.</summary>
     internal sealed class RfidCardImageCatalog
     {
         // 중앙 미리보기와 분류 썸네일이 함께 사용할 카드별 Sprite다.
         private readonly Dictionary<string, Sprite> images = new Dictionary<string, Sprite>();
 
-        /// <summary>기존 카드 목록에 대응하는 AI·인간 이미지 여섯 장을 준비한다.</summary>
+        /// <summary>기존 카드 목록에 대응하는 피그마 이미지 여섯 장을 준비한다.</summary>
         internal RfidCardImageCatalog()
         {
             LoadImages(RfidCardCatalog.AiCardIds);
@@ -33,10 +33,12 @@ namespace Core
             for (int index = 0; index < cardIds.Length; index++)
             {
                 // 별도 썸네일 없이 원본 Sprite 하나를 모든 표시 영역에서 공유한다.
-                Sprite image = Resources.Load<Sprite>("TEMP_MasterpieceCards/Sprites/" + cardIds[index]);
+                // Confirmed left-to-right: Human, AI, Human, AI, Human, AI.
+                int pictureNumber = index * 2 + (RfidCardCatalog.GetCardType(cardIds[index]) == RfidCardType.Ai ? 2 : 1);
+                Sprite image = Resources.Load<Sprite>("FigmaCards/Card" + pictureNumber);
                 images[cardIds[index]] = image;
                 if (image == null)
-                    Debug.LogWarning($"[RfidCardImageCatalog] Temporary masterpiece sprite is missing for {cardIds[index]}. Check TEMP_MasterpieceCards/Sprites.");
+                    Debug.LogWarning($"[RfidCardImageCatalog] Figma card sprite is missing for {cardIds[index]}. Check FigmaCards/Card{pictureNumber}.");
             }
         }
     }

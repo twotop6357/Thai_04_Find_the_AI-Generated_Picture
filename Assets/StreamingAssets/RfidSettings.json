@@ -1,0 +1,26 @@
+{
+    "listenAddress": "0.0.0.0",
+    "port": 5000,
+    "releaseSeconds": 1.0,
+    "frameGapMilliseconds": 50,
+    "frameDelimiterHex": "",
+    "dataFormat": "Auto",
+    "ignoredHexValues": [],
+    "readers": [
+        { "slot": "Center", "remoteIp": "", "listenPort": 0 },
+        { "slot": "Ai1", "remoteIp": "", "listenPort": 0 },
+        { "slot": "Ai2", "remoteIp": "", "listenPort": 0 },
+        { "slot": "Ai3", "remoteIp": "", "listenPort": 0 },
+        { "slot": "Human1", "remoteIp": "", "listenPort": 0 },
+        { "slot": "Human2", "remoteIp": "", "listenPort": 0 },
+        { "slot": "Human3", "remoteIp": "", "listenPort": 0 }
+    ],
+    "cards": [
+        { "cardId": "HUMAN_1", "hexValues": [] },
+        { "cardId": "AI_1", "hexValues": [] },
+        { "cardId": "HUMAN_2", "hexValues": [] },
+        { "cardId": "AI_2", "hexValues": [] },
+        { "cardId": "HUMAN_3", "hexValues": [] },
+        { "cardId": "AI_3", "hexValues": [] }
+    ]
+}

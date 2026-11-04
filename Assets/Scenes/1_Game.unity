@@ -135,6 +135,8 @@ GameObject:
   - component: {fileID: 9948265}
   - component: {fileID: 9948264}
   - component: {fileID: 9948268}
+  - component: {fileID: 9948270}
+  - component: {fileID: 9948269}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -265,6 +267,81 @@ MonoBehaviour:
   finishScenePath: Assets/Scenes/2_Finish.unity
   retryPopup: {fileID: 431026205}
   retryBlackBox: {fileID: 1136003475}
+--- !u!114 &9948269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9948263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 859a2b1d37003f449b23efa13ac235af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  images:
+  - image: {fileID: 1224989896}
+    thai: {fileID: 21300000, guid: 61c3ba7f4b3ce8c40b522b2912e7f0d0, type: 3}
+    english: {fileID: 21300000, guid: 6c2a99916c2252044ad5a9ae345caf76, type: 3}
+    useNativeSize: 0
+  - image: {fileID: 1803649160}
+    thai: {fileID: 21300000, guid: 341a65f6f716e8345b337cdf4f4a0035, type: 3}
+    english: {fileID: 21300000, guid: 86a30814ad718944b859eab43ec9ddfa, type: 3}
+    useNativeSize: 0
+  - image: {fileID: 1671074705}
+    thai: {fileID: 21300000, guid: e24139173ab6e2e49ae5d093a2756722, type: 3}
+    english: {fileID: 21300000, guid: 52f14af670adeb34d976cb8eb9465802, type: 3}
+    useNativeSize: 0
+  - image: {fileID: 1304257173}
+    thai: {fileID: 21300000, guid: 351ae52aa7d2b304f804aefd93ad3d28, type: 3}
+    english: {fileID: 21300000, guid: 2f1fbf84986ddae4e85513e90da3ecad, type: 3}
+    useNativeSize: 0
+  - image: {fileID: 431026207}
+    thai: {fileID: 21300000, guid: ee88f0153bdb44d4bbb956066d3f4c69, type: 3}
+    english: {fileID: 21300000, guid: e2bffe5a1e8e73f4e9194060910a45c8, type: 3}
+    useNativeSize: 0
+  - image: {fileID: 174865572}
+    thai: {fileID: 21300000, guid: 7bb63d7eaa1f84c4c9d59a6710faba02, type: 3}
+    english: {fileID: 21300000, guid: 9842e20267d7d9a4e99925905c48f380, type: 3}
+    useNativeSize: 0
+  - image: {fileID: 406760746}
+    thai: {fileID: 21300000, guid: ba5c3d08806a7a1419adcb1b01391d6f, type: 3}
+    english: {fileID: 21300000, guid: cfd97aff5925d1941bae604401bc9102, type: 3}
+    useNativeSize: 0
+  - image: {fileID: 244962347}
+    thai: {fileID: 21300000, guid: e55f847f5e8c48148a86919d24edd814, type: 3}
+    english: {fileID: 21300000, guid: 31cb9030e33dd6d46a06bedf2867eab0, type: 3}
+    useNativeSize: 0
+  results: {fileID: 131949074}
+  thaiScores:
+  - {fileID: 21300000, guid: 964fffbf16eb6b646946a11163a14be2, type: 3}
+  - {fileID: 21300000, guid: dd15b0e7e07a35b49aad4f970ae0fbcf, type: 3}
+  - {fileID: 21300000, guid: a6469c085e1f5dc4e9d8e15098180de8, type: 3}
+  - {fileID: 21300000, guid: ef29a0d98ccf57842ac13c7b31baa472, type: 3}
+  - {fileID: 21300000, guid: 3fdb883cc1f57bb42884007fe76bcb88, type: 3}
+  - {fileID: 21300000, guid: 14c56f11e49adc84db10e6d051fffd19, type: 3}
+  - {fileID: 21300000, guid: f66b5427734f0994685bcb07130994fc, type: 3}
+  englishScores:
+  - {fileID: 21300000, guid: 514bdbac411cd61448562eb815d8ee32, type: 3}
+  - {fileID: 21300000, guid: 3380d5cddbb8c5a47b505e5eae07746b, type: 3}
+  - {fileID: 21300000, guid: 0ae3e62b23724e24f8a071f275c1d2ed, type: 3}
+  - {fileID: 21300000, guid: b39cc349e52555a4fac08ffbbb353aed, type: 3}
+  - {fileID: 21300000, guid: e7283c4a827505447b2778d0ec2ce08a, type: 3}
+  - {fileID: 21300000, guid: da1ddc35b8b2ec441984b484f0e4acfe, type: 3}
+  - {fileID: 21300000, guid: 9d83718a42dc0ce4cb5884a0d7a0af32, type: 3}
+--- !u!114 &9948270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9948263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e583961f2bbbcec4aa3a893164d7ddeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  results: {fileID: 9948268}
 --- !u!1 &15086715
 GameObject:
   m_ObjectHideFlags: 0
@@ -1322,13 +1399,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreImage: {fileID: 132751117}
   scoreSprites:
-  - {fileID: 21300000, guid: d96d4fac426561d49a801adb0dffd597, type: 3}
-  - {fileID: 21300000, guid: f55a4f1ca02561945ae8085e65265114, type: 3}
-  - {fileID: 21300000, guid: 10a48dbc37f7c0d43b93bc729e848d08, type: 3}
-  - {fileID: 21300000, guid: 453006c184aae3f4185a8273ba1c0b0a, type: 3}
-  - {fileID: 21300000, guid: 8fd22195479233042b210eef822365dd, type: 3}
-  - {fileID: 21300000, guid: 8437e4038fbb81e409b431edc956118b, type: 3}
-  - {fileID: 21300000, guid: f00fd3e8a69d9a042a3945715c1b21ec, type: 3}
+  - {fileID: 21300000, guid: 514bdbac411cd61448562eb815d8ee32, type: 3}
+  - {fileID: 21300000, guid: 3380d5cddbb8c5a47b505e5eae07746b, type: 3}
+  - {fileID: 21300000, guid: 0ae3e62b23724e24f8a071f275c1d2ed, type: 3}
+  - {fileID: 21300000, guid: b39cc349e52555a4fac08ffbbb353aed, type: 3}
+  - {fileID: 21300000, guid: e7283c4a827505447b2778d0ec2ce08a, type: 3}
+  - {fileID: 21300000, guid: da1ddc35b8b2ec441984b484f0e4acfe, type: 3}
+  - {fileID: 21300000, guid: 9d83718a42dc0ce4cb5884a0d7a0af32, type: 3}
   feedbackImages:
   - {fileID: 1251739956}
   - {fileID: 1068530823}
@@ -1343,9 +1420,11 @@ MonoBehaviour:
   - {fileID: 672977786}
   - {fileID: 1831293901}
   - {fileID: 1923077948}
-  correctSprite: {fileID: 21300000, guid: faae8636583b5cd419abcee461bf5a88, type: 3}
-  incorrectSprite: {fileID: 21300000, guid: 6798be8fb16d2814cbc999683c550b97, type: 3}
+  correctSprite: {fileID: 21300000, guid: f90202c5abc88b4459fc7f828a0db19f, type: 3}
+  incorrectSprite: {fileID: 21300000, guid: 05fdcaf11409ca04893c2c7b3f0e24f3, type: 3}
   instruction: {fileID: 1304257172}
+  englishScorePosition: {x: 107, y: -213}
+  thaiScorePosition: {x: 68, y: -217}
 --- !u!1 &132751114
 GameObject:
   m_ObjectHideFlags: 0
@@ -1411,9 +1490,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d96d4fac426561d49a801adb0dffd597, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 514bdbac411cd61448562eb815d8ee32, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -1482,7 +1561,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 72fcb4cd34676764dbab586deeb004e6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9842e20267d7d9a4e99925905c48f380, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1841,7 +1920,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e703b5e29e3b6204587bcead7691f9c4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 31cb9030e33dd6d46a06bedf2867eab0, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -1873,11 +1952,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 174865571}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 95}
-  m_SizeDelta: {x: 1207, y: 132}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -900}
+  m_SizeDelta: {x: 1920, y: 180}
+  m_Pivot: {x: 0, y: 1}
 --- !u!1 &251209771
 GameObject:
   m_ObjectHideFlags: 0
@@ -2562,7 +2641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f1870dfe818ee94b8f33bd26f0404f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardId: HUMAN_2
+  cardId: HUMAN_3
   picture: {fileID: 710145821}
   aiBar: {fileID: 799961438}
   humanBar: {fileID: 1368001209}
@@ -2827,7 +2906,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f1870dfe818ee94b8f33bd26f0404f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardId: HUMAN_3
+  cardId: AI_3
   picture: {fileID: 1076149368}
   aiBar: {fileID: 1344588254}
   humanBar: {fileID: 274495341}
@@ -3111,7 +3190,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d6442e2fbe22900459bacc67f23005ea, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cfd97aff5925d1941bae604401bc9102, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3221,7 +3300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f1870dfe818ee94b8f33bd26f0404f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardId: AI_3
+  cardId: HUMAN_2
   picture: {fileID: 1741333875}
   aiBar: {fileID: 940831282}
   humanBar: {fileID: 1936188996}
@@ -3284,7 +3363,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5caacccc54429eb43a2f46213fe68bac, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e2bffe5a1e8e73f4e9194060910a45c8, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5935,7 +6014,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f1870dfe818ee94b8f33bd26f0404f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardId: AI_2
+  cardId: AI_1
   picture: {fileID: 658819094}
   aiBar: {fileID: 1192530646}
   humanBar: {fileID: 15086716}
@@ -6951,7 +7030,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 85a8b6200b8995f469748a124bd501b1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6c2a99916c2252044ad5a9ae345caf76, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7254,7 +7333,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e0acdf42b7d05434aa49f6eea79283d2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2f1fbf84986ddae4e85513e90da3ecad, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7286,11 +7365,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 131949070}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 30}
-  m_SizeDelta: {x: 982, y: 133}
-  m_Pivot: {x: 0.5, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -900}
+  m_SizeDelta: {x: 1920, y: 180}
+  m_Pivot: {x: 0, y: 1}
 --- !u!1 &1340434494
 GameObject:
   m_ObjectHideFlags: 0
@@ -7608,7 +7687,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f1870dfe818ee94b8f33bd26f0404f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardId: HUMAN_1
+  cardId: AI_2
   picture: {fileID: 650169625}
   aiBar: {fileID: 1027773093}
   humanBar: {fileID: 1409319142}
@@ -8611,7 +8690,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f1870dfe818ee94b8f33bd26f0404f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardId: AI_1
+  cardId: HUMAN_1
   picture: {fileID: 2098213662}
   aiBar: {fileID: 936327049}
   humanBar: {fileID: 1717964143}
@@ -9154,7 +9233,7 @@ RectTransform:
   m_GameObject: {fileID: 1671074703}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.94, y: 0.94, z: 0.94}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 32117034}
@@ -9190,7 +9269,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d121be74f49390e4ab169c11c32e9123, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 52f14af670adeb34d976cb8eb9465802, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9485,8 +9564,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 408, y: -930}
-  m_SizeDelta: {x: 1104, y: 133}
+  m_AnchoredPosition: {x: 0, y: -900}
+  m_SizeDelta: {x: 1920, y: 180}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1803649160
 MonoBehaviour:
@@ -9508,7 +9587,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6b0a27969c10b7b4c975fc01ed9a0330, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 86a30814ad718944b859eab43ec9ddfa, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

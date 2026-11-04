@@ -15,17 +15,37 @@ namespace Core
         [SerializeField] private Sprite correctSprite;
         [SerializeField] private Sprite incorrectSprite;
         [SerializeField] private CanvasGroup instruction;
+        [SerializeField] private Vector2 englishScorePosition = new Vector2(107, -213);
+        [SerializeField] private Vector2 thaiScorePosition = new Vector2(68, -217);
         private readonly Vector2[] restingPositions = new Vector2[6];
         private readonly Quaternion[] restingRotations = new Quaternion[6];
         private bool captured;
         private bool ready;
         private Sequence sequence;
+        private int scoreCount;
         public bool IsAnimating => !ready;
+
+        public void SetScoreSprites(Sprite[] sprites)
+        {
+            if (sprites == null || sprites.Length != 7) return;
+            scoreSprites = sprites;
+            if (scoreImage != null)
+            {
+                scoreImage.sprite = scoreSprites[scoreCount];
+                scoreImage.preserveAspect = true;
+                scoreImage.SetNativeSize();
+                scoreImage.rectTransform.anchoredPosition =
+                    ClassificationEntryController.SelectedLanguage == ClassificationLanguage.Thai
+                        ? thaiScorePosition : englishScorePosition;
+            }
+        }
 
         public void Prepare(int count, string[] cards)
         {
             Stop();
-            scoreImage.sprite = scoreSprites[Mathf.Clamp(count, 0, 6)];
+            scoreCount = Mathf.Clamp(count, 0, 6);
+            scoreImage.sprite = scoreSprites[scoreCount];
+            scoreImage.SetNativeSize();
             var catalog = new RfidCardImageCatalog();
             for (int i = 0; i < feedbackImages.Length; i++)
             {

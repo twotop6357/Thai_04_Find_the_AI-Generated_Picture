@@ -9,10 +9,10 @@ namespace Core
 {
     public enum ClassificationLanguage { Thai, English }
 
-    /// <summary>Title button duration selects a logged language; artwork remains English.</summary>
+    /// <summary>At Title, a two-second hold switches the language in place and a short press starts in that language.</summary>
     public sealed class ClassificationEntryController : MonoBehaviour
     {
-        public const double EnglishHoldSeconds = 2;
+        public const double LanguageHoldSeconds = 2;
         [SerializeField] private GameObject titlePanel;
         [SerializeField] private GameObject tutorialPanel;
         [SerializeField] private TutorialCardPresentation tutorialPresentation;
@@ -26,10 +26,16 @@ namespace Core
         private int version;
         private CancellationTokenSource cancellation;
         public bool IsStarting => starting;
-        public static ClassificationLanguage SelectedLanguage { get; private set; } = ClassificationLanguage.English;
+        public static ClassificationLanguage SelectedLanguage { get; private set; } = ClassificationLanguage.Thai;
+        /// <summary>The argument is true when the change should play the language fade.</summary>
+        public static event Action<bool> LanguageChanged;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetLanguage() => SelectedLanguage = ClassificationLanguage.English;
+        private static void ResetLanguage()
+        {
+            SelectedLanguage = ClassificationLanguage.Thai;
+            LanguageChanged = null;
+        }
 
         private void OnEnable()
         {
@@ -39,6 +45,8 @@ namespace Core
 
         private void Start()
         {
+            // Every visitor starts in Thai, even if the previous visitor switched to English.
+            SetLanguage(ClassificationLanguage.Thai, false);
             // Preserve the designer's editor visibility, but always enter the experience at Title.
             ScreenTransition.ShowImmediate(tutorialPanel, false);
             ScreenTransition.ShowImmediate(titlePanel, true);
@@ -56,7 +64,7 @@ namespace Core
             {
                 pressed = false; waitForRelease = true; return;
             }
-            if (starting || ScreenTransition.IsBusy)
+            if (starting || ScreenTransition.IsBusy || ClassificationUiLanguage.IsFading || RfidMappingWindow.IsOpen)
             {
                 pressed = false; waitForRelease = held; return;
             }
@@ -74,10 +82,12 @@ namespace Core
             if (titlePanel.activeInHierarchy)
             {
                 // Check the duration before release handling, including a release exactly at 2 seconds.
-                if (pressed && Time.realtimeSinceStartupAsDouble - pressedAt >= EnglishHoldSeconds)
+                if (pressed && Time.realtimeSinceStartupAsDouble - pressedAt >= LanguageHoldSeconds)
                 {
+                    // Require a release so one hold switches once and never also starts.
                     pressed = false; waitForRelease = true;
-                    StartTutorial(ClassificationLanguage.English);
+                    SetLanguage(SelectedLanguage == ClassificationLanguage.Thai
+                        ? ClassificationLanguage.English : ClassificationLanguage.Thai, true);
                     return;
                 }
                 if (held)
@@ -87,7 +97,7 @@ namespace Core
                 else if (pressed)
                 {
                     pressed = false;
-                    StartTutorial(ClassificationLanguage.Thai);
+                    StartTutorial();
                 }
             }
             else
@@ -100,8 +110,9 @@ namespace Core
         /// <summary>A completed short press; hardware that supplies down/up must use SetPhysicalButtonPressed.</summary>
         public void PressButton1()
         {
-            if (!isActiveAndEnabled || starting || ScreenTransition.IsBusy || SingleButtonInput.IsSettingsOpen) return;
-            if (titlePanel.activeInHierarchy) StartTutorial(ClassificationLanguage.Thai);
+            if (!isActiveAndEnabled || starting || ScreenTransition.IsBusy ||
+                ClassificationUiLanguage.IsFading || RfidMappingWindow.IsOpen) return;
+            if (titlePanel.activeInHierarchy) StartTutorial();
             else if (tutorialPanel.activeInHierarchy && tutorialPresentation != null && tutorialPresentation.IsComplete)
             {
                 autoAdvanceRequested = true;
@@ -115,12 +126,19 @@ namespace Core
             if (isActiveAndEnabled) physicalHeld = held;
         }
 
-        private void StartTutorial(ClassificationLanguage language)
+        private void SetLanguage(ClassificationLanguage language, bool animated)
+        {
+            if (SelectedLanguage == language) return;
+            SelectedLanguage = language;
+            LanguageChanged?.Invoke(animated);
+            Debug.Log($"[ClassificationEntryController] Language changed to {language}.", this);
+        }
+
+        private void StartTutorial()
         {
             if (starting || ScreenTransition.IsBusy) return;
             autoAdvanceRequested = false;
-            SelectedLanguage = language;
-            Debug.Log($"[ClassificationEntryController] Starting {language} mode. Language selection is logged only; English artwork remains active.", this);
+            Debug.Log($"[ClassificationEntryController] Starting {SelectedLanguage} mode.", this);
             AdvanceAsync(true, version).Forget();
         }
 

@@ -17,6 +17,7 @@ namespace Core
     {
         private ISubscriber<InactivityTimeoutEvent> _inactivityTimeoutSubscriber;
         private IDisposable _inactivityTimeoutSubscription;
+        private IPublisher<MoveIdleEvent> _moveIdlePublisher;
 
         /// <summary>
         /// GameManagerBase.Construct와 별개의 [Inject] 메서드. VContainer는 타입 계층의 각
@@ -24,9 +25,18 @@ namespace Core
         /// 않고 이 프로젝트에서만 필요한 의존성을 추가할 수 있음.
         /// </summary>
         [Inject]
-        public void ConstructGameManager(ISubscriber<InactivityTimeoutEvent> inactivityTimeoutSubscriber)
+        public void ConstructGameManager(ISubscriber<InactivityTimeoutEvent> inactivityTimeoutSubscriber,
+            IPublisher<MoveIdleEvent> moveIdlePublisher)
         {
             _inactivityTimeoutSubscriber = inactivityTimeoutSubscriber;
+            _moveIdlePublisher = moveIdlePublisher;
+        }
+
+        public void ReturnHome()
+        {
+            if (ScreenTransition.IsBusy) return;
+            _moveIdlePublisher?.Publish(new MoveIdleEvent());
+            ReturnToFirstScreen();
         }
 
         /// <summary>
