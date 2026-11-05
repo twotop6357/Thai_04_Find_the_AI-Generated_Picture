@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace Core
 {
-    /// <summary>이미지 에셋을 수정하지 않고 둥근 내부 영역의 스텐실 마스크를 그린다.</summary>
+    /// <summary>Draws a stencil mask for a rounded inner area without modifying the image asset.</summary>
     [AddComponentMenu("UI/Rounded Rect Mask Graphic")]
     [RequireComponent(typeof(CanvasRenderer))]
     public sealed class RoundedRectMaskGraphic : MaskableGraphic

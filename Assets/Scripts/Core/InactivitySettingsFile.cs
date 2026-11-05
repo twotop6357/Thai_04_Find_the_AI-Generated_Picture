@@ -8,9 +8,9 @@ using UnityEngine;
 namespace Core
 {
     /// <summary>
-    /// 기존 Settings.json에 비활동 복귀 키가 없으면 기본값으로 추가한다.
-    /// AppSettingsProvider가 파일을 처음 읽기 전에 끝나도록 가장 이른 초기화 단계에서 실행한다.
-    /// 이미 적힌 값과 나머지 내용은 그대로 두고, 파일이 없거나 형식이 잘못되었으면 건드리지 않는다.
+    /// Adds the inactivity return keys with default values when an existing Settings.json lacks them.
+    /// Runs at the earliest initialization stage so it finishes before AppSettingsProvider first reads the file.
+    /// Existing values and other content stay as they are; a missing or malformed file is left untouched.
     /// </summary>
     public static class InactivitySettingsFile
     {
@@ -31,7 +31,7 @@ namespace Core
                 string updated = AddMissingKeys(json);
                 if (updated == json) return;
 
-                // 쓰는 도중 끊겨도 기존 파일이 잘리지 않도록 임시 파일을 거쳐 교체한다.
+                // Replace through a temp file so an interrupted write cannot truncate the existing file.
                 File.WriteAllText(tempPath, updated);
                 File.Replace(tempPath, path, null);
                 Debug.Log($"[InactivitySettingsFile] Added missing inactivity keys to {FileName}.");
@@ -43,7 +43,7 @@ namespace Core
             }
         }
 
-        /// <summary>최상위 객체의 맨 앞에 없는 키만 추가한 JSON을 반환한다.</summary>
+        /// <summary>Returns the JSON with only the missing keys added at the start of the top-level object.</summary>
         public static string AddMissingKeys(string json)
         {
             var entries = new List<string>();

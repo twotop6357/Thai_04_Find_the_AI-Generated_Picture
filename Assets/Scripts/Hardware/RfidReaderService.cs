@@ -8,8 +8,8 @@ using Debug = UnityEngine.Debug;
 namespace Hardware
 {
     /// <summary>
-    /// TCP로 받은 RFID 값을 카드 ID로 바꿔 RfidInput에 넣는다. 게임 코드는 입력 출처를 알 필요가 없다.
-    /// 마지막 수신 후 releaseSeconds 동안 값이 다시 들어오지 않으면 해당 리더의 인식을 해제한다.
+    /// Converts RFID values received over TCP to card IDs and feeds RfidInput. Game code need not know the input source.
+    /// Releases a reader when no value arrives for releaseSeconds after the last one.
     /// </summary>
     [DefaultExecutionOrder(-900)]
     [DisallowMultipleComponent]
@@ -19,7 +19,7 @@ namespace Hardware
 
         public static RfidReaderService Instance { get; private set; }
 
-        /// <summary>무시 값이 아닌 모든 수신값을 메인 스레드에서 전달한다. 리더 지정 여부와 무관하다.</summary>
+        /// <summary>Delivers every non-ignored received value on the main thread, whether or not the reader is assigned.</summary>
         public event Action<RfidFrame> FrameReceived;
 
         public RfidSettings Settings { get; private set; }
@@ -54,7 +54,7 @@ namespace Hardware
             ReloadSettings();
         }
 
-        /// <summary>파일을 다시 읽는다. 통신 설정이 바뀐 경우에만 서버를 다시 시작한다.</summary>
+        /// <summary>Rereads the file. Restarts the server only if network settings changed.</summary>
         public void ReloadSettings()
         {
             Settings = RfidSettings.Load(out bool canSave);
@@ -84,7 +84,7 @@ namespace Hardware
             if (server == null) return;
             while (server.TryDequeueMessage(out string message)) Debug.Log("[RfidReaderService] " + message, this);
             while (server.TryDequeueError(out string error)) Debug.LogError("[RfidReaderService] " + error, this);
-            // 이미 도착한 값을 먼저 반영해, 프레임이 늦어져도 잘못 해제하지 않는다.
+            // Apply values that already arrived first, so a slow frame cannot cause a false release.
             while (server.TryDequeueFrame(out RfidFrame frame)) HandleFrame(frame);
             ReleaseExpiredSlots();
         }
@@ -95,7 +95,7 @@ namespace Hardware
             FrameReceived?.Invoke(frame);
             if (!TryFindSlot(frame, out RfidReaderSlot slot)) return;
             lastSeen[slot] = frame.ReceivedTimestamp;
-            // 미등록 값도 물리적으로 놓인 카드이므로 HEX 그대로 넣는다. 게임에서는 Unknown으로 처리된다.
+            // An unregistered value is still a physically placed card, so pass its HEX as is. The game treats it as Unknown.
             RfidInput.NotifyPlaced(slot, GetCardId(frame.Hex) ?? frame.Hex);
         }
 
@@ -115,7 +115,7 @@ namespace Hardware
 
         public string GetCardId(string hex) => valueToCard.TryGetValue(hex, out string cardId) ? cardId : null;
 
-        /// <summary>같은 카드에 값이 여러 개 등록될 수 있다. 다른 카드에 등록된 값은 빼앗지 않는다.</summary>
+        /// <summary>A card can have several registered values. Values registered to another card are not taken over.</summary>
         public AddValueResult AddCardValue(string cardId, string hex)
         {
             if (ignoredValues.Contains(hex)) return AddValueResult.Ignored;
@@ -139,7 +139,7 @@ namespace Hardware
             return false;
         }
 
-        /// <summary>접속한 리더를 게임 슬롯에 지정한다. 같은 접속을 쓰던 다른 슬롯의 지정은 해제한다.</summary>
+        /// <summary>Assigns a connected reader to a game slot and clears any other slot using the same connection.</summary>
         public bool AssignReader(RfidReaderSlot slot, RfidClientInfo client)
         {
             int listenPort = client.LocalPort == Settings.port ? 0 : client.LocalPort;
@@ -171,7 +171,7 @@ namespace Hardware
             return false;
         }
 
-        /// <summary>IP와 전용 포트 중 지정된 조건을 모두 만족해야 한다. 둘 다 비어 있으면 미지정 슬롯이다.</summary>
+        /// <summary>All specified conditions (IP and dedicated port) must match. A slot with neither is unassigned.</summary>
         private bool Matches(RfidReaderMapping reader, string remoteIp, int localPort)
         {
             if (reader == null) return false;

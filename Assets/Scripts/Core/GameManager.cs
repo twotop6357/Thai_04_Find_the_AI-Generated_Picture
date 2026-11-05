@@ -11,9 +11,9 @@ using HuliacDev.Core;
 namespace Core
 {
     /// <summary>
-    /// 프로젝트 전용 게임 매니저.
-    /// 싱글톤 유지, 디버그 토글, Settings 비동기 로드는 GameManagerBase가 제공하며
-    /// 프로젝트 고유의 전역 흐름 제어를 이곳에 추가함.
+    /// Project-specific game manager.
+    /// GameManagerBase provides the singleton, debug toggles and async Settings loading;
+    /// project-specific global flow control goes here.
     /// </summary>
     public class GameManager : GameManagerBase
     {
@@ -25,9 +25,9 @@ namespace Core
         private bool _inactivityPaused;
 
         /// <summary>
-        /// GameManagerBase.Construct와 별개의 [Inject] 메서드. VContainer는 타입 계층의 각
-        /// 레벨에서 선언된 [Inject] 메서드를 모두 수집해 주입하므로, 베이스 시그니처를 건드리지
-        /// 않고 이 프로젝트에서만 필요한 의존성을 추가할 수 있음.
+        /// An [Inject] method separate from GameManagerBase.Construct. VContainer collects [Inject] methods
+        /// declared at every level of the type hierarchy, so project-only dependencies can be added
+        /// without changing the base signature.
         /// </summary>
         [Inject]
         public void ConstructGameManager(ISubscriber<InactivityTimeoutEvent> inactivityTimeoutSubscriber,
@@ -36,7 +36,7 @@ namespace Core
             _inactivityTimeoutSubscriber = inactivityTimeoutSubscriber;
             _moveIdlePublisher = moveIdlePublisher;
             _inactivityTimer = resolver.ResolveOrDefault<InactivityTimer>();
-            // 주입이 OnEnable보다 늦게 끝나도 타임아웃 구독이 빠지지 않게 한다.
+            // Keep the timeout subscription even if injection finishes after OnEnable.
             if (isActiveAndEnabled) SubscribeInactivityTimeout();
         }
 
@@ -49,18 +49,18 @@ namespace Core
         private void HandleInactivityTimeout()
         {
             ReturnToFirstScreen();
-            // 타이머는 한 번 발행하면 입력 전까지 멈추므로, 전환을 시작하지 못했으면 다시 측정한다.
+            // The timer stays latched after publishing until input arrives, so restart it if no transition started.
             if (!ScreenTransition.IsBusy && _inactivityTimer != null) _inactivityTimer.ResetTimer();
         }
 
         /// <summary>
-        /// 비활동 복귀 예외 구간에서는 타이머를 멈추고, 구간이 끝나면 처음부터 다시 잰다.
-        /// 예외: 화면 전환 중, 이미 최초 화면, GamePanel에서 카드 인식 중, 영상 재생~카드 제거 팝업, 운영자 매핑 창.
+        /// Pauses the timer during inactivity-return exemptions and restarts it from zero when they end.
+        /// Exemptions: screen transitions, already on the first screen, a card recognized on GamePanel, video playback through the card removal popup, and the operator mapping window.
         /// </summary>
         private void Update()
         {
             if (_inactivityTimer == null) return;
-            // NextButton은 Input Manager 입력이라 타이머의 Input System 감지와 별개로 활동을 알린다.
+            // NextButton is Input Manager input, so report it as activity separately from the timer's Input System detection.
             if (SingleButtonInput.IsPressed) _inactivityTimer.ResetTimer();
 
             bool exempt = ScreenTransition.IsBusy || ClassificationEntryController.IsTitleShowing ||
@@ -79,8 +79,8 @@ namespace Core
         }
 
         /// <summary>
-        /// InactivityTimer의 타임아웃 이벤트를 구독함. move_idle_timeout 로그는 ApiManagerBase가
-        /// 같은 이벤트를 자체 구독해 자동으로 보내므로, 여기서는 화면 복귀만 담당함.
+        /// Subscribes to the InactivityTimer timeout event. ApiManagerBase subscribes to the same event and
+        /// sends the move_idle_timeout log itself, so this class only handles the screen return.
         /// </summary>
         protected override void OnEnable()
         {
@@ -102,15 +102,15 @@ namespace Core
         }
 
         /// <summary>
-        /// 공통 암전 전환을 거쳐 대상 프로젝트의 첫 화면으로 복귀한다.
-        /// 기존 DI와 타임아웃/수동복귀 로그 책임은 유지한다.
+        /// Returns to this project's first screen through the shared fade-to-black transition.
+        /// Existing DI and timeout/manual return logging responsibilities are unchanged.
         /// <para>
-        /// 수동 복귀 경로(예: 콘텐츠 종료 버튼)를 추가할 때는 이 메서드를 호출하기 전후로
-        /// IPublisher&lt;MoveIdleEvent&gt;.Publish(new MoveIdleEvent())를 직접 호출해 move_idle
-        /// 로그를 보낼 것. 이 메서드 자체는 로그를 보내지 않음 — 타임아웃 경로(move_idle_timeout,
-        /// ApiManagerBase가 InactivityTimeoutEvent를 자체 구독해 자동 전송)와 이 메서드를
-        /// 공유하므로, 여기서 MoveIdleEvent까지 함께 발행하면 타임아웃 복귀 때도 move_idle이
-        /// 중복으로 나가게 됨.
+        /// When adding a manual return path (e.g. an end-of-content button), call
+        /// IPublisher&lt;MoveIdleEvent&gt;.Publish(new MoveIdleEvent()) around this method to send the move_idle
+        /// log. This method sends no log itself: it is shared with the timeout path (move_idle_timeout,
+        /// sent automatically by ApiManagerBase from its own InactivityTimeoutEvent subscription),
+        /// so publishing MoveIdleEvent here would also send a duplicate move_idle
+        /// on timeout returns.
         /// </para>
         /// </summary>
         protected virtual void ReturnToFirstScreen()

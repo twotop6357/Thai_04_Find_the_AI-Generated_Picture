@@ -2,7 +2,7 @@
 
 StatisticsPanel button1 enters Assets/Scenes/2_Finish.unity through ScreenTransition.SceneAsync after the statistics guide finishes. The scene is enabled in Build Settings. Finish's copied ClassificationResultPanel was removed; FinishVideoPresentation owns VideoPanel.
 
-The existing Resources/_PROTO/_Videos/4번영상_임시.mp4 is referenced directly (1920×1080,30fps,3150 frames,105seconds). One native VideoPlayer decodes into one depth-free1080p ARGB32 RenderTexture (about7.9MiB), with direct native audio. There are no frame copies, CPU frame caches, per-frame polling or multiple decoders in production.
+As of 2026-11-05 the clip follows the selected language: Resources/Videos/FinishVideo_Thai.mp4 or FinishVideo_English.mp4, both referenced directly. The figures below were measured with the temporary clip used at the time (1920×1080, 30fps, 3150 frames, 105 seconds), which has been removed. One native VideoPlayer decodes into one depth-free1080p ARGB32 RenderTexture (about7.9MiB), with direct native audio. There are no frame copies, CPU frame caches, per-frame polling or multiple decoders in production.
 
 On entry the RawImage stays disabled, the previous texture is detached, overlays reset, and the GPU target clears to black. Prepare completes before Play. Only the first decoded frame enables VideoImage and satisfies ISceneDisplayReady; the common scene transition stays dark until then. Playback continues immediately; there is no paused poster. First-frame events switch off after this single callback. Playback uses unscaled time.
 

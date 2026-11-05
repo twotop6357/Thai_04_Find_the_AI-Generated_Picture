@@ -4,35 +4,35 @@ using UnityEngine;
 
 namespace Core
 {
-    /// <summary>RFID 카드 ID를 피그마 카드 이미지에 연결한다.</summary>
+    /// <summary>Maps RFID card IDs to Figma card images.</summary>
     internal sealed class RfidCardImageCatalog
     {
-        // 중앙 미리보기와 분류 썸네일이 함께 사용할 카드별 Sprite다.
+        // Per-card sprites shared by the center preview and classification thumbnails.
         private readonly Dictionary<string, Sprite> images = new Dictionary<string, Sprite>();
 
-        /// <summary>기존 카드 목록에 대응하는 피그마 이미지 여섯 장을 준비한다.</summary>
+        /// <summary>Prepares the six Figma images matching the card list.</summary>
         internal RfidCardImageCatalog()
         {
             LoadImages(RfidCardCatalog.AiCardIds);
             LoadImages(RfidCardCatalog.HumanCardIds);
         }
 
-        /// <summary>카드에 대응하는 원본 이미지를 반환하고 미등록·빈 카드는 숨긴다.</summary>
-        /// <param name="cardId">리더에서 인식한 카드 ID이며 빈 슬롯은 null이다.</param>
-        /// <returns>공유할 이미지이며 미등록 카드나 리소스 누락이면 null이다.</returns>
+        /// <summary>Returns the source image for a card; unregistered or empty cards are hidden.</summary>
+        /// <param name="cardId">Card ID recognized by a reader; null for an empty slot.</param>
+        /// <returns>The shared image, or null for an unregistered card or a missing resource.</returns>
         internal Sprite GetImage(string cardId)
         {
             return cardId != null && images.TryGetValue(cardId, out Sprite image) ? image : null;
         }
 
-        /// <summary>카드 순서와 같은 번호의 Resources 이미지를 등록한다.</summary>
-        /// <param name="cardIds">기존 RFID 입력에 등록된 한 출처의 카드 목록이다.</param>
+        /// <summary>Registers the Resources image numbered to match the card order.</summary>
+        /// <param name="cardIds">Cards of one origin registered with the RFID input.</param>
         private void LoadImages(string[] cardIds)
         {
-            // 실제 카드 목록에서 이미지 번호를 정할 인덱스다.
+            // Index used to derive the image number from the card list.
             for (int index = 0; index < cardIds.Length; index++)
             {
-                // 별도 썸네일 없이 원본 Sprite 하나를 모든 표시 영역에서 공유한다.
+                // All display areas share one source sprite; there are no separate thumbnails.
                 // Confirmed left-to-right: Human, AI, Human, AI, Human, AI.
                 int pictureNumber = index * 2 + (RfidCardCatalog.GetCardType(cardIds[index]) == RfidCardType.Ai ? 2 : 1);
                 Sprite image = Resources.Load<Sprite>("FigmaCards/Card" + pictureNumber);

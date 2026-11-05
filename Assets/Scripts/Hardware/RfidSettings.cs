@@ -20,7 +20,7 @@ namespace Hardware
         public int listenPort;
     }
 
-    /// <summary>StreamingAssets/RfidSettings.json의 내용. F10 매핑 창이 같은 파일에 저장한다.</summary>
+    /// <summary>Contents of StreamingAssets/RfidSettings.json. The F10 mapping window saves to the same file.</summary>
     [Serializable]
     public sealed class RfidSettings
     {
@@ -41,7 +41,7 @@ namespace Hardware
         public List<RfidReaderMapping> readers = new List<RfidReaderMapping>();
         public List<RfidCardMapping> cards = new List<RfidCardMapping>();
 
-        /// <summary>파일을 읽는다. 읽지 못하면 기본값을 돌려주고, 사람이 고칠 수 있게 파일은 덮어쓰지 않는다.</summary>
+        /// <summary>Reads the file. If it cannot be read, returns defaults and leaves the file intact so a person can fix it.</summary>
         public static RfidSettings Load(out bool canSave)
         {
             var settings = new RfidSettings();
@@ -62,10 +62,10 @@ namespace Hardware
             return settings;
         }
 
-        /// <summary>임시 파일을 먼저 쓰고 교체해, 저장 중 종료되어도 기존 파일이 깨지지 않게 한다.</summary>
+        /// <summary>Writes a temp file first and swaps it in, so exiting during a save cannot corrupt the existing file.</summary>
         public bool TrySave(out string error)
         {
-            // 점으로 시작하는 파일은 Unity가 임포트하지 않는다.
+            // Unity does not import files starting with a dot.
             string path = FilePath;
             string temporary = Path.Combine(Path.GetDirectoryName(path), "." + FileName + ".tmp");
             try

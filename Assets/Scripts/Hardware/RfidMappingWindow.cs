@@ -6,11 +6,11 @@ using UnityEngine.InputSystem;
 
 namespace Hardware
 {
-    /// <summary>F10으로 여는 운영자 창. 카드 그림을 고른 뒤 실물 카드를 리더에 올리면 값이 등록된다.</summary>
+    /// <summary>Operator window opened with F10. Select a card picture, then place the physical card on a reader to register its value.</summary>
     [RequireComponent(typeof(RfidReaderService))]
     public sealed class RfidMappingWindow : MonoBehaviour, IContentBlocker
     {
-        // Figma 카드 번호 순서. 실제 카드와 같은 순서로 보여 찾기 쉽게 한다.
+        // Figma card number order, matching the physical cards so they are easy to find.
         private static readonly string[] CardOrder = { "HUMAN_1", "AI_1", "HUMAN_2", "AI_2", "HUMAN_3", "AI_3" };
         private static readonly RfidReaderSlot[] Slots = (RfidReaderSlot[])Enum.GetValues(typeof(RfidReaderSlot));
         private static readonly Color AiColor = new Color(1f, 0.55f, 0.5f);
@@ -62,7 +62,7 @@ namespace Hardware
         {
             if (IsOpen) return;
             IsOpen = true;
-            // 파일을 직접 고친 내용도 창을 열 때 반영한다.
+            // Opening the window also picks up direct edits to the file.
             service.ReloadSettings();
             if (catalog == null) catalog = new RfidCardImageCatalog();
             previousCursorVisible = Cursor.visible;
@@ -218,7 +218,7 @@ namespace Hardware
             foreach (string hex in card.hexValues)
             {
                 float height = RowHeight(hex, textWidth);
-                // 값이 길어도 줄바꿈으로 전체를 보여준다.
+                // Wrap long values so they are shown in full.
                 GUI.Label(new Rect(0f, y, textWidth, height), hex, smallStyle);
                 if (GUI.Button(new Rect(textWidth + 4f, y + 2f, rowButton, 26f), "Remove", smallButtonStyle)) removed = hex;
                 y += height;

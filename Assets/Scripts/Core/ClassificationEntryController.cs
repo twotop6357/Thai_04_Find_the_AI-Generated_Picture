@@ -27,7 +27,7 @@ namespace Core
         private CancellationTokenSource cancellation;
         private static ClassificationEntryController current;
         public bool IsStarting => starting;
-        /// <summary>이미 최초 화면이면 비활동 복귀가 필요 없다.</summary>
+        /// <summary>No inactivity return is needed while already on the first screen.</summary>
         public static bool IsTitleShowing => current != null && current.isActiveAndEnabled &&
             current.titlePanel != null && current.titlePanel.activeInHierarchy;
         public static ClassificationLanguage SelectedLanguage { get; private set; } = ClassificationLanguage.Thai;

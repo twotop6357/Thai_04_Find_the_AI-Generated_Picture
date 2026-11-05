@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Hardware
 {
-    /// <summary>리더에서 받은 메시지 하나. 수신 시각은 마지막 바이트가 도착한 시점이다.</summary>
+    /// <summary>One message received from a reader. The receive time is when its last byte arrived.</summary>
     public sealed class RfidFrame
     {
         public string Hex;
@@ -26,9 +26,9 @@ namespace Hardware
     }
 
     /// <summary>
-    /// 리더(TCP Client)의 접속을 받는 서버. TCP는 메시지 경계가 없으므로 구분자 또는 수신 공백으로
-    /// 메시지 하나를 완성한 뒤 전달한다. 조각난 값이 다른 카드 값처럼 보이지 않게 하기 위함이다.
-    /// Unity API를 쓰지 않으며, 결과는 큐에 쌓아 메인 스레드가 가져간다.
+    /// Server accepting connections from readers (TCP clients). TCP has no message boundaries, so a message is
+    /// completed by a delimiter or receive gap before delivery, so fragments do not look like other card values.
+    /// Uses no Unity API; results are queued for the main thread to collect.
     /// </summary>
     public sealed class RfidTcpServer : IDisposable
     {
@@ -99,7 +99,7 @@ namespace Hardware
                 try
                 {
                     listener = new TcpListener(address, port);
-                    // 재시작 직후 TIME_WAIT 상태의 포트도 다시 열 수 있어야 한다.
+                    // The port must be reopenable even in TIME_WAIT right after a restart.
                     listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                     listener.Start();
                     lock (sync) { listeners.Add(listener); listeningPorts.Add(port); }
@@ -182,7 +182,7 @@ namespace Hardware
             }
             finally
             {
-                // 구분자 방식에서 끝나지 않은 메시지는 잘린 값이므로 버린다.
+                // In delimiter mode an unfinished message is a truncated value, so discard it.
                 if (!stopping && delimiter.Length == 0 && pending.Count > 0) Publish(pending.ToArray(), info, lastByte);
                 bool registered;
                 lock (sync) registered = clients.Remove(client);

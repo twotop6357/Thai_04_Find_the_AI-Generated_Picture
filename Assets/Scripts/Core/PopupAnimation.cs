@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Core
 {
-    /// <summary>Game/Finish 안내 팝업의 공통 등장 연출. 반환 트윈의 취소/완료 처리는 호출자가 소유한다.</summary>
+    /// <summary>Shared entrance animation for Game/Finish guide popups. The caller owns cancelling and completing the returned tween.</summary>
     public static class PopupAnimation
     {
         public const float FadeDuration = 0.25f;

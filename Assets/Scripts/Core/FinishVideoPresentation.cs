@@ -30,7 +30,7 @@ namespace Core
         private static FinishVideoPresentation current;
         public bool IsDisplayReady => firstFrameReady;
         public bool IsComplete => ended && (popupAnimation == null || !popupAnimation.IsActive() || !popupAnimation.IsPlaying());
-        /// <summary>영상 재생부터 카드 제거 팝업까지는 비활동 복귀를 멈춘다. 재생 실패 시에는 멈추지 않아 화면에 갇히지 않는다.</summary>
+        /// <summary>Holds the inactivity return from playback through the card removal popup. A playback failure releases the hold so the screen cannot get stuck.</summary>
         public static bool HoldsInactivityReturn => current != null && current.isActiveAndEnabled && !current.playbackFailed;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -55,7 +55,7 @@ namespace Core
             current = this;
             playbackFailed = false;
             ResetVisuals();
-            // Finish는 언어 선택 뒤에 로드되며, 언어는 이 씬에서 바뀌지 않는다.
+            // Finish loads after language selection, and the language does not change in this scene.
             VideoClip clip = ClassificationEntryController.SelectedLanguage == ClassificationLanguage.Thai ? thaiClip : englishClip;
             if (clip == null)
             {
@@ -101,7 +101,7 @@ namespace Core
 
         private void Update()
         {
-            // 영상과 안내 등장 연출이 끝난 뒤에만 실제 일곱 리더의 빈 상태로 복귀한다.
+            // Return only when all seven physical readers are empty, after the video and popup entrance finish.
             if (!IsComplete || !removeCardPopup.gameObject.activeInHierarchy || !RfidInput.IsBoardClear ||
                 returningToIdle || ScreenTransition.IsBusy) return;
             ReturnToIdleAsync().Forget();
@@ -160,7 +160,7 @@ namespace Core
 
         private void OnDisable()
         {
-            // 새 씬이 활성화된 정상 언로드에서는 전환 소유자의 마지막 페이드를 취소하지 않는다.
+            // A normal unload with the new scene active must not cancel the transition owner's final fade.
             if (SceneManager.GetActiveScene() == gameObject.scene) returnCancellation?.Cancel();
             // Hide and detach before resetting the decoder, so a previous frame can never flash on reentry.
             ResetVisuals();

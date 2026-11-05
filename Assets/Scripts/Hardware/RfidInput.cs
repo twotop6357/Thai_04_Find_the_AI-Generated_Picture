@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Hardware
 {
     /// <summary>
-    /// 설치된 RFID 리더 7개. 중앙 인터랙션 보드 1칸, 하단 좌측 AI 분류 3칸, 하단 우측 인간 분류 3칸.
+    /// The seven installed RFID readers: one on the center board, three AI slots at bottom left, three Human slots at bottom right.
     /// </summary>
     public enum RfidReaderSlot
     {
@@ -20,7 +20,7 @@ namespace Hardware
     }
 
     /// <summary>
-    /// 카드가 지칭하는 이미지의 실제 출처.
+    /// The actual origin of the card's image.
     /// </summary>
     public enum RfidCardType
     {
@@ -30,7 +30,7 @@ namespace Hardware
     }
 
     /// <summary>
-    /// 리더 위에 카드가 올라가거나(IsPlaced) 내려갔을 때 발행되는 이벤트.
+    /// Event published when a card is placed on (IsPlaced) or removed from a reader.
     /// </summary>
     public readonly struct RfidCardEvent
     {
@@ -50,7 +50,7 @@ namespace Hardware
     }
 
     /// <summary>
-    /// 게임이 사용하는 카드 ID와 카드 종류. 실제 카드 HEX 값과의 연결은 RfidSettings.json에서 관리한다.
+    /// Card IDs and types used by the game. RfidSettings.json maps them to physical card HEX values.
     /// </summary>
     public static class RfidCardCatalog
     {
@@ -66,21 +66,21 @@ namespace Hardware
     }
 
     /// <summary>
-    /// RFID 리더 입력의 단일 진입점. RfidReaderService가 NotifyPlaced/NotifyRemoved로
-    /// 입력을 넣고, 게임 로직은 OnCardChanged 구독 또는 GetCard 조회로만
-    /// 상태를 읽으므로 입력 출처가 바뀌어도 게임 코드는 수정할 필요가 없음.
-    /// 리더당 카드 1장, 카드 1장은 한 리더에만 존재한다는 물리적 제약을 이 클래스가 보장함.
+    /// Single entry point for RFID reader input. RfidReaderService feeds input through NotifyPlaced/NotifyRemoved
+    /// and game logic reads state only through OnCardChanged or GetCard,
+    /// so game code does not change when the input source changes.
+    /// This class enforces the physical constraints: one card per reader, and each card on only one reader.
     /// </summary>
     public static class RfidInput
     {
         private static readonly Dictionary<RfidReaderSlot, string> SlotCards = new Dictionary<RfidReaderSlot, string>();
         private static Subject<RfidCardEvent> _cardChangedSubject = new Subject<RfidCardEvent>();
 
-        /// <summary>카드 올림/내림 이벤트 스트림. 메인 스레드에서 발행됨.</summary>
+        /// <summary>Stream of card placed/removed events, published on the main thread.</summary>
         public static Observable<RfidCardEvent> OnCardChanged => _cardChangedSubject;
 
         /// <summary>
-        /// 도메인 리로드 비활성화 환경에서 이전 플레이 세션의 상태와 구독이 남지 않도록 초기화함.
+        /// Resets so state and subscriptions from a previous play session do not survive with domain reload disabled.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics()
@@ -90,16 +90,16 @@ namespace Hardware
             _cardChangedSubject = new Subject<RfidCardEvent>();
         }
 
-        /// <summary>모든 리더가 비어 있는지 여부.</summary>
+        /// <summary>Whether all readers are empty.</summary>
         public static bool IsBoardClear => SlotCards.Count == 0;
 
-        /// <summary>해당 리더 위의 카드 ID. 비어 있으면 null.</summary>
+        /// <summary>The card ID on this reader, or null if empty.</summary>
         public static string GetCard(RfidReaderSlot slot)
         {
             return SlotCards.TryGetValue(slot, out string cardId) ? cardId : null;
         }
 
-        /// <summary>카드가 올라가 있는 리더를 찾음. 없으면 false.</summary>
+        /// <summary>Finds the reader holding a card; false if there is none.</summary>
         public static bool TryFindSlot(string cardId, out RfidReaderSlot slot)
         {
             foreach (KeyValuePair<RfidReaderSlot, string> pair in SlotCards)
@@ -116,8 +116,8 @@ namespace Hardware
         }
 
         /// <summary>
-        /// 리더에 카드가 감지됨. 같은 카드가 다른 리더에 있으면 먼저 그 리더에서 제거하고,
-        /// 대상 리더에 다른 카드가 있으면 그 카드도 제거 이벤트를 낸 뒤 올림.
+        /// A card was detected on a reader. If the same card is on another reader it is removed from there first,
+        /// and a different card already on the target reader gets a removal event before the new card is placed.
         /// </summary>
         public static void NotifyPlaced(RfidReaderSlot slot, string cardId)
         {
@@ -135,7 +135,7 @@ namespace Hardware
             Publish(new RfidCardEvent(slot, cardId, true));
         }
 
-        /// <summary>리더에서 카드가 사라짐. 비어 있던 리더면 무시함.</summary>
+        /// <summary>A card left a reader. Ignored if the reader was already empty.</summary>
         public static void NotifyRemoved(RfidReaderSlot slot)
         {
             if (!SlotCards.TryGetValue(slot, out string cardId)) return;
@@ -144,7 +144,7 @@ namespace Hardware
             Publish(new RfidCardEvent(slot, cardId, false));
         }
 
-        /// <summary>모든 리더를 비움.</summary>
+        /// <summary>Empties all readers.</summary>
         public static void ClearAll()
         {
             foreach (RfidReaderSlot slot in (RfidReaderSlot[])Enum.GetValues(typeof(RfidReaderSlot)))

@@ -1,80 +1,109 @@
 # Changelog
-관람객·운영자 경험에 영향을 주는 변경 사항을 기록합니다. 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따릅니다.
+Records changes that affect the visitor or operator experience. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [2026-11-05]
+
+### Added
+- Enabled the inactivity return to Title after a period without input. The time is set with `resetTime` in `StreamingAssets/Settings.json` (default 30 seconds), and `resetTime` or `useInactivityTimer` is added on startup if missing from an existing file. It is not measured while a card is recognized on GamePanel, from video playback through the card removal popup, during screen transitions, on Title, or in the F10 mapping window.
+- `TransitionSoundManager` in the `GameLifetimeScope` prefab can be assigned a button transition sound and a return-to-first-screen sound. The button sound plays only when a button press actually starts a screen transition.
+
+### Changed
+- `2_Finish` now plays the new video for the selected language (Thai or English) instead of the temporary video.
+- Replaced the `_PROTO` folder with `Assets/Resources/Videos`. The videos are now `FinishVideo_Thai.mp4` and `FinishVideo_English.mp4`.
+- Renamed Korean asset files to English and translated comments and documents to English. Asset GUIDs are unchanged, so scene references are preserved.
+
+### Removed
+- Removed resources nothing uses: `TEMP_MasterpieceCards`, the six `_PROTO` images and temporary video, unused `Assets/UI/English` images, `Figma20261104/*/Title.png`, and `Lang_En.json` / `Lang_Th.json`.
+- Removed the unused scripts `ButtonMappingPanel` and `HelpPanelController`.
+
+## [2026-11-04]
+
+### Added
+- Connected the RFID readers over TCP. The readers are clients and the program is the server; the entire value a reader sends is used as the card value with no length limit. Recognition is released when no value arrives for 1 second after the last one. Settings are edited in `StreamingAssets/RfidSettings.json`.
+- Added an RFID card mapping window toggled with F10. Select a card picture, then place the physical card to register it. A card whose value changes can register several values.
+
+### Removed
+- Removed the F9 RFID tester.
+
+### Changed
+- When changing language, the background stays while the current language's text and button guide fade out over 0.5 seconds and the new language's text and guide fade in over 0.5 seconds.
+- Moved the game button to `NextButton` in the Input Manager. The primary input is `joystick button 0` and the secondary input is keyboard digit 1. The button is changed in the Input Manager; the F8 button settings screen and runtime re-registration are no longer provided.
+- Holding the button for 2 seconds on Title switches between Thai and English while staying on the screen, and a short press starts in the current language. The language resets to Thai on every entry to Idle.
 
 ## [2026-10-27]
 
 ### Changed
-- 통계 안내 종료 후1번 입력으로2_Finish/VideoPanel에 이동하고4번영상_임시를 재생함. 첫 디코딩 프레임까지 화면을 가린 뒤 표시하며, 종료 시 마지막 프레임을 유지하고BlackBox0.25초페이드→카드제거팝업0.3초OutBack을 재생함. 단일VideoPlayer/GPU텍스처를 재사용하고 씬 해제 시 반환하여 재진입 잔상과 불필요한 프레임 캐시를 방지함.
-- StatisticsPanel을 제공된 시안의6열 배치·수평 누적 그래프로 조정함. 사진 마스크는 기존 비교판의 실제 내곽선을 따르고, 그래프는 하나의 둥근 마스크 안에서0.5초간 경계와 퍼센트가 함께 움직임. 지정된 기본 폰트의 볼드체로 수치를 표시하며, 기존 이미지에 포함된AI/Human글자는 유지하고 불필요한 텍스트는 제거함. 전체 종료 후 기존 하단 안내 이미지를0.25초 페이드인함.
-- ResultPanel의 사진을 카드 안쪽에 맞춘 마스크로 표시함. FeedbackArtwork는 원래 크기174×274를 유지하고 마스크 밖에서 위치·회전만 짧게 움직여 도장 효과를 재생함. 피드백 전체 종료 후 정답 수0~6의 ScoreArtwork를0.25초 페이드인하고, 이어 ButtonInstruction을0.25초 페이드인한 뒤1번 입력을 허용함. 삭제된 이전 정답 표시 참조와 여러 패널이 동시에 활성인 시작 상태를 처리함.
-- GamePanel 사진의 크기 연출을 제거하고 고정 크기에서 0.25초 페이드인/아웃하도록 변경함. ButtonInstruction은 6개 분류 리더가 모두 인식되면 0.25초 등장하고, 하나라도 인식이 끊기면 0.25초 퇴장 후 비활성화됨.
-- RFID 카드의 낙서 미리보기를 임시 명화6종(AI생성3/실제공개명화3)으로 교체하고 중앙/분류/통계 사진을 마스크 채우기+1%확대로 표시함. 이전 원본 낙서/카드ID/통계는 보존하며 자료·출처·프롬프트는 Resources/TEMP_MasterpieceCards에 기록함.
-- 이미지 결과화면에서 제거된 기존 점수/안내 텍스트 참조를 선택사항으로 처리해 작품 UI만 있어도 확정·점수·통계 전환이 정상 진행되도록 함.
+- After the statistics guide finishes, button 1 moves to 2_Finish/VideoPanel and plays the temporary video #4. The screen stays covered until the first decoded frame. At the end the last frame is held, then BlackBox fades over 0.25 seconds and the card removal popup plays a 0.3-second OutBack. A single VideoPlayer and GPU texture are reused and released on scene unload, preventing reentry ghosting and unnecessary frame caches.
+- Adjusted StatisticsPanel to the supplied design's six-column layout with horizontal stacked graphs. Photo masks follow the actual inner contour of the existing comparison board, and each graph's boundary and percentage move together over 0.5 seconds inside one rounded mask. Values use the bold face of the specified default font, the AI/Human lettering in the existing image is kept, and unnecessary text is removed. After everything finishes, the existing bottom guide image fades in over 0.25 seconds.
+- ResultPanel photos use a mask fitted to the inside of the card. FeedbackArtwork keeps its original 174×274 size and moves and rotates briefly outside the mask for a stamp effect. After all feedback finishes, the ScoreArtwork for 0 to 6 correct answers fades in over 0.25 seconds, then ButtonInstruction fades in over 0.25 seconds, and only then is button 1 accepted. Handled deleted references to the old correct-answer display and a starting state with several panels active.
+- Removed the GamePanel photo scale animation; photos now fade in and out over 0.25 seconds at a fixed size. ButtonInstruction appears over 0.25 seconds when all six classification readers recognize cards, and exits over 0.25 seconds and deactivates if any recognition is lost.
+- Replaced the RFID card doodle previews with six temporary masterpieces (3 AI-generated, 3 real public-domain) and showed center, classification and statistics photos with mask cover fill plus 1% overscale. Previous original doodles, card IDs and statistics were preserved; materials, sources and prompts were recorded in Resources/TEMP_MasterpieceCards (removed 2026-11-05).
+- Made references to the removed old score and guide text optional on the image result screen, so submission, scoring and statistics transitions work with artwork UI alone.
 
-- GamePanel의7개사진마스크를배경프레임의실제내곽선으로보정하고배경정규화앵커에연결함. 중앙장식곡선까지반영하며사진/리더/연출은보존함. 기준1920×1080실제렌더에서추출내곽참조와7개모두픽셀차이0확인.
+- Corrected the seven GamePanel photo masks to the actual inner contour of the background frame and tied them to normalized background anchors, including the central decorative curves, preserving photos, readers and animations. At 1920×1080, an actual render matched the extracted inner reference with zero differing pixels for all seven.
 
-- Title에서 1번을 짧게 누르면 Thai,2초유지하면English모드선택을영어로그로한번남기고Tutorial로이동함(실제UI는영어유지). Tutorial은화살표/가이드점멸→Card1확대이동·그림자제외정확안착→장식등장을75%속도로2회재생함. 첫회직후해당카드만0.5초페이드아웃하고원래위치에서0.5초페이드인해복원함. 보드/나머지카드는유지하며,두번째안착상태를0.5초유지한후Game으로자동이동함. 전환/재진입/중간취소를정리함.
+- A short press of 1 on Title selected Thai and a 2-second hold selected English, logging the choice once in English and moving to Tutorial (the actual UI stayed English). Tutorial plays arrow and guide blinks, Card1 enlarging and moving to a precise placement excluding its shadow, and a decoration entrance, twice at 75% speed. Right after the first play, only that card fades out over 0.5 seconds and fades back in at its original position over 0.5 seconds. The board and other cards stay, and after holding the second placement for 0.5 seconds it moves to Game automatically. Transitions, reentry and mid-way cancellation are cleaned up.
 
-- 기존 사진 분류→점수→응답 통계 화면과 복귀에 공통 0.5초 퇴장/0.5초 등장 페이드를 적용하고 전환 중 연타를 차단함. 취소 후 이미 저장된 라운드는 다시 저장하지 않고 복구함.
-- 카드 제거 안내에 공통 암전 후 팝 연출을 적용함. 화면 해제 시 트윈을 정리하고 실제 RFID 인식 상태는 유지함.
+- Applied a shared 0.5-second exit and 0.5-second entrance fade to the existing photo classification → score → response statistics screens and their return, and blocked repeated presses during transitions. A round already saved before a cancellation is restored without saving it again.
+- Applied a shared fade-to-black then pop animation to the card removal guide. Tweens are cleaned up when the screen closes, and the actual RFID recognition state is preserved.
 
 ### Added
-- 사용자가 추가한 Thai_04 전용 UI31개만 사용해 점수0~6/정오답 카드/응답 비교판/제거 팝업을 대략적으로 연결함. 다른 프로젝트에서 반입했던 이미지는 제거함. En/Th 목록은 대상31개/53연결로 재작성(태국어 placeholder, 런타임 언어 적용은 미연결).
-- 리더별 사진 표시와 연출 중 확정 차단을 추가함. 사진 표시는 후속 요청에 따라 고정 크기 0.25초 페이드로 변경했으며, 제거·교체·재인식·패널 수명을 정리함.
-- 정오답 피드백과 점수·버튼 안내, 실제 AI/Human 응답률 연출을 추가함. 후속 요청으로 결과는 고정 크기 도장, 통계는0.5초 수평 누적으로 변경함. 기존 응답 저장·정답 판정·물리 리더 상태는 유지함.
-- Idle의 숫자1/숫자패드1 및 공개 PressButton1()을 Title→Tutorial→Game 공통 전환에 연결하고 Game 씬을 빌드 목록에 추가함. 세부 UI 배치는 사용자가 후속 조정함.
+- Roughly connected scores 0 to 6, correct/incorrect cards, the response comparison board and the removal popup using only the 31 user-added Thai_04 UI images. Images imported from another project were removed. The En/Th lists were rewritten for 31 targets and 53 bindings (Thai placeholder, runtime language switching not connected).
+- Added per-reader photo display and a submission block during animations. Photo display later changed to a fixed-size 0.25-second fade on request, with removal, replacement, re-recognition and panel lifetime cleaned up.
+- Added correct/incorrect feedback, score and button guides, and actual AI/Human response rate animations. On later requests, results became fixed-size stamps and statistics became a 0.5-second horizontal stack. Existing response storage, answer checking and physical reader state are preserved.
+- Connected digit 1, numpad 1 and the public PressButton1() in Idle to the shared Title→Tutorial→Game transition and added the Game scene to the build list. The user adjusts the detailed UI layout afterward.
 
 ## [2026-10-21]
 
 ### Added
 - Added per-image AI/Human response charts with persistent device-local counts, response totals, and backup recovery. Accepted button 1 submissions add one vote per image; reopening charts adds none.
 - Added an English results screen submitted with button 1 after all six classification readers are filled, with total score, per-slot circle/cross feedback, session statistics, and board-clear retry. Keyboard 1 and numpad 1 share the future Arduino entry point.
-- RFID 중앙 리더에 놓은 카드의 원본 이미지를 GamePanel에 표시하고, AI·인간 분류 리더 각 세 칸에는 같은 이미지의 썸네일을 표시함. 카드 이동·교체·제거·모두 내리기에 맞춰 각 칸을 갱신하며 프로토타입 이미지 여섯 장을 사용함.
+- Shows the original image of the card on the RFID center reader in GamePanel, and thumbnails of the same image on each of the three AI and three Human classification readers. Each slot updates as cards move, swap, are removed or all cleared, using six prototype images.
 
 ## [2026-10-16]
 
 ### Added
-- 설정 파일에 `alwaysOnTop`을 true로 적으면 앱 창을 항상 위로 두어 함께 켜진 다른 프로그램 창이 앱 화면을 가리지 않게 하며, 기본은 꺼짐이고 켜면 `F` 키가 포커스 복구와 항상 위를 함께 끄고 켬.
+- Setting `alwaysOnTop` to true in the settings file keeps the app window on top so other programs' windows cannot cover it. It is off by default; when on, the `F` key toggles focus restore and always-on-top together.
 
 ## [2026-10-12]
 
 ### Added
-- `F` 키로 창 포커스 복구를 끄거나 켜면 화면 위쪽에 바뀐 상태와 다시 켜는 키를 잠깐 표시함.
+- Toggling window focus restore with the `F` key briefly shows the new state and the key to re-enable it at the top of the screen.
 
 ### Fixed
-- 응답 없는 프로그램 창이 앞에 있을 때 앱 창을 다시 앞으로 가져오려다 앱도 함께 멈출 수 있던 문제를 고침.
-- 설정 파일을 읽지 못한 채 실행하면 숨은 종료 버튼이 화면 가운데에 흰 사각형으로 보이던 문제를 고쳐, 이제 좌상단에 투명하게 놓임.
+- Fixed the app possibly freezing while bringing its window forward when an unresponsive program's window was in front.
+- Fixed the hidden close button appearing as a white square in the middle of the screen when running without a readable settings file; it now sits transparently at the top left.
 
 ## [2026-10-10]
 
 ### ⚠ Breaking Changes
-- Windows 빌드에서 다른 창이 앞에 뜨면 3초 뒤 앱이 다시 앞으로 오므로, 유지보수 중 다른 프로그램을 쓰려면 앱에서 `F` 키를 눌러 이 기능을 꺼야 함(앱을 다시 켜면 켜진 상태로 돌아감).
-- 설정 파일(`Settings.json`)이 없거나 형식이 깨진 채로 실행하면 이제 입력이 90초 없을 때 처음 화면으로 돌아가므로, 비활동 복귀를 쓰지 않으려면 설정 파일을 올바르게 두고 `useInactivityTimer`를 false로 적어야 함.
+- In Windows builds the app returns to the front 3 seconds after another window appears, so to use other programs during maintenance press `F` in the app to turn this off (it turns back on when the app restarts).
+- Running with `Settings.json` missing or malformed now returns to the first screen after 90 seconds without input. To avoid the inactivity return, keep the settings file valid and set `useInactivityTimer` to false.
 
 ### Added
-- 알림·업데이트 창 등에 포커스를 빼앗겨도 앱 창을 다시 앞으로 가져와 키보드형 바코드·QR 스캐너 입력이 끊기지 않게 하고, 대기 시간과 재시도 간격을 설정 파일(`focusRestoreDelay`·`focusRestoreRetryInterval`, 기본 3초)로 조정할 수 있게 함.
+- Brings the app window back to the front after notifications or update dialogs take focus, so keyboard-style barcode and QR scanner input is not interrupted. The wait and retry interval are adjustable in the settings file (`focusRestoreDelay` and `focusRestoreRetryInterval`, default 3 seconds).
 
 ### Fixed
-- 로그 뷰어가 앱을 오래 켜 둘수록 메모리를 계속 늘리던 문제를 고침.
-- 설정 파일을 읽지 못하면 비활동 복귀가 일부러 끈 것과 구별되지 않게 조용히 꺼지던 문제를 고쳐, 이제 오류 로그를 남기고 비활동 복귀를 90초로 켠 대체 설정으로 실행함.
+- Fixed the log viewer growing memory the longer the app stayed on.
+- Fixed the inactivity return silently turning off, indistinguishable from turning it off on purpose, when the settings file could not be read. It now logs an error and runs with fallback settings with a 90-second inactivity return.
 
 ## [2026-09-25]
 
 ### ⚠ Breaking Changes
-- 설정 파일의 종료 버튼 항목(`closeSetting`)에서 투명도·위치·제한 시간을 빼 두면 이제 0 대신 기본값이 쓰이므로, 0을 기대했다면 값을 직접 적어야 함.
-- 설정 파일에서 글자 크기를 0으로 적어도 더 이상 글자가 숨겨지지 않으므로, 텍스트를 숨기려면 텍스트 오브젝트를 꺼야 함.
-- 버튼 텍스트가 버튼 바로 아래가 아닌 더 깊은 곳에만 있으면 설정 적용 시 글자가 겹치므로, 텍스트를 버튼 바로 아래로 옮겨야 함.
+- Leaving opacity, position or time limit out of the close button entry (`closeSetting`) in the settings file now uses defaults instead of 0, so write the values explicitly if you expected 0.
+- Setting a font size of 0 in the settings file no longer hides text; turn off the text object to hide it.
+- Button text located deeper than directly under the button overlaps when settings are applied, so move the text directly under the button.
 
 ### Changed
-- 설정 파일에 종료 버튼 항목이 없을 때 숨은 종료 버튼을 3초 안에 10번 누르면 앱이 종료됨(이전 기본값은 0.5초 안에 10번이라 사실상 종료할 수 없었음).
-- 종료 버튼의 연속 클릭 제한 시간은 최소 1초로 적용되며, 더 짧게 적으면 1초로 올려 적용함.
-- 종료에 필요한 클릭 횟수가 3회 미만이면 관람객이 우연히 눌러 앱이 꺼질 수 있다는 경고가 로그에 남음.
-- 없는 사운드 키, 범위를 벗어난 종료 버튼 설정처럼 잘못된 설정은 조용히 무시하지 않고 로그에 경고로 남김.
+- With no close button entry in the settings file, pressing the hidden close button 10 times within 3 seconds closes the app (the previous default of 10 times in 0.5 seconds made closing practically impossible).
+- The close button's consecutive click limit is at least 1 second; shorter values are raised to 1 second.
+- If fewer than 3 clicks are required to close, a warning is logged that visitors could close the app by accident.
+- Invalid settings, such as a missing sound key or out-of-range close button settings, are now logged as warnings instead of being silently ignored.
 
 ### Fixed
-- 배경음악을 불러오는 중에 정지하거나 페이드아웃해도, 불러오기가 끝난 뒤 배경음악이 다시 재생되던 문제를 고침.
-- 배경음악을 불러오는 중에 다른 곡으로 바꾸면 늦게 도착한 이전 곡이 새 곡을 덮어쓰던 문제를 고침.
-- 배경 이미지가 있는 버튼에 텍스트가 표시되지 않던 문제를 고침.
-- 설정 파일에서 글자 크기를 빼면 텍스트가 보이지 않던 문제를 고침.
-- 종료 버튼 설정의 일부 항목만 적으면 나머지가 0으로 바뀌어 버튼이 사라지거나 종료가 동작하지 않던 문제를 고침.
-- 아두이노 연결이 끊기는 순간 오류가 나 동작이 멈출 수 있던 문제를 고침.
+- Fixed background music restarting after loading finished when it was stopped or faded out during loading.
+- Fixed a late-arriving previous track overwriting the new one when switching tracks during background music loading.
+- Fixed text not showing on buttons with background images.
+- Fixed text disappearing when font size was left out of the settings file.
+- Fixed the button disappearing or closing not working when only some close button settings were written, because the rest became 0.
+- Fixed a possible error and stall at the moment the Arduino connection dropped.

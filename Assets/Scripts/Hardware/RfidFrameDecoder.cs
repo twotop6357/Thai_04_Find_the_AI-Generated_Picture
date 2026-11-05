@@ -6,15 +6,15 @@ namespace Hardware
 {
     public enum RfidDataFormat
     {
-        /// <summary>Hex 문자와 구분자로만 된 메시지는 HexText, 그 외는 Binary로 처리한다.</summary>
+        /// <summary>Messages made only of hex characters and separators are HexText; everything else is Binary.</summary>
         Auto,
-        /// <summary>리더가 "E2 00 1A" 같은 문자열을 보낸다. 줄바꿈마다 값 하나로 처리한다.</summary>
+        /// <summary>The reader sends strings like "E2 00 1A". Each line break ends one value.</summary>
         HexText,
-        /// <summary>리더가 원시 바이트를 보낸다. 메시지 전체를 값 하나로 처리한다.</summary>
+        /// <summary>The reader sends raw bytes. The whole message is one value.</summary>
         Binary,
     }
 
-    /// <summary>TCP 메시지 전체를 HEX 값으로 바꾼다. 길이를 제한하거나 일부만 잘라 쓰지 않는다.</summary>
+    /// <summary>Converts a whole TCP message to a HEX value, without limiting its length or using only part of it.</summary>
     public static class RfidFrameDecoder
     {
         public static List<string> Decode(byte[] data, RfidDataFormat format)
@@ -43,7 +43,7 @@ namespace Hardware
             return values;
         }
 
-        /// <summary>손으로 고친 JSON도 같은 값으로 비교되도록 구분자를 없애고 대문자로 맞춘다.</summary>
+        /// <summary>Removes separators and uppercases so hand-edited JSON compares equal.</summary>
         public static string NormalizeHex(string value)
         {
             if (string.IsNullOrEmpty(value)) return string.Empty;
@@ -53,7 +53,7 @@ namespace Hardware
             return builder.ToString();
         }
 
-        /// <summary>구분자 설정값을 바이트로 바꾼다. 비어 있으면 빈 배열, 형식이 잘못되면 null이다.</summary>
+        /// <summary>Converts the delimiter setting to bytes: an empty array when empty, null when malformed.</summary>
         public static byte[] ParseHexBytes(string value)
         {
             string hex = NormalizeHex(value);
@@ -73,7 +73,7 @@ namespace Hardware
 
         private static bool IsHexText(byte[] data)
         {
-            // 구분자만 있는 메시지도 텍스트로 처리해, 줄바꿈이 카드 값으로 인식되지 않게 한다.
+            // Treat delimiter-only messages as text too, so a line break is never read as a card value.
             foreach (byte value in data)
                 if (!IsHexDigit(value) && value != ' ' && value != '\t' && value != '\r' && value != '\n' &&
                     value != ':' && value != '-' && value != ',') return false;

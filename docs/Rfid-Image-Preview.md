@@ -4,7 +4,9 @@ All seven GamePanel photos now fade in independently over 0.25 seconds, with no 
 
 Play Mode verification passed 40/40 checks, including each reader's removal, rapid re-detection, fixed scales, unknown cards, panel cleanup and score submission. Evidence: Temp/GamePhotoFades/final-results.json. Real statistics remained unchanged. The older implementation notes below are historical.
 
-# Current temporary artwork — 2026-10-27
+# Temporary artwork — 2026-10-27 (superseded)
+
+The current card images are Resources/FigmaCards/Card1..6.png. The temporary folder and _PROTO images described here were removed on 2026-11-05.
 
 Resources/TEMP_MasterpieceCards replaces the previous drawn previews via RfidCardImageCatalog: three generated AI originals and three real public-domain paintings from The Met. Existing _PROTO files remain preserved. Six prebuilt Sprite assets share their original textures and use the exact Game ImageMask ratio. Each painting keeps its original aspect and uses a presentation crop; provenance and prompts are inside the temporary folder.
 
@@ -16,41 +18,41 @@ The seven apertures now use normalized contours traced from this project's exist
 
 At native1920×1080, an actual stencil-fill capture matched all seven extracted reference regions with zero differing pixels. Point-coordinate checks also passed at1200×1000 and2560×900 panel shapes. A changed background drawing requires recalibration; arbitrary display antialiasing results were not measured. Extraction and verification evidence is in Temp/GameMaskAlignment.
 
-# RFID 이미지 미리보기와 분류 썸네일
+# RFID image preview and classification thumbnails
 
-2026-10-21 사용자 요청. 구현 대상은 Thai_04_Find_the_AI-Generated_Picture다.
+User request of 2026-10-21. The implementation target is Thai_04_Find_the_AI-Generated_Picture.
 
-## 동작
+## Behavior
 
-- GamePanel의 중앙 리더 Center에 카드를 올리면 RFIDImageBox에 원본을 표시한다.
-- Ai1·Ai2·Ai3는 AI_ImageGroup의 첫째·둘째·셋째 Image에 대응한다.
-- Human1·Human2·Human3는 Human_ImageGroup의 첫째·둘째·셋째 Image에 대응한다.
-- 썸네일도 원본과 같은 Sprite를 공유하며 이미지 비율을 보존한다. 기존 Image의 좌표·크기·그룹 순서를 유지한다.
-- 카드가 제거되면 해당 Image의 Sprite를 비우고 Image만 숨긴다. 빈 슬롯의 오브젝트를 끄지 않으므로 레이아웃 위치가 유지된다.
-- 카드 이동·교체는 기존 RfidInput의 제거/배치 이벤트를 따르며 다른 칸은 보존한다. 모두 내리기는 일곱 칸을 비운다.
-- 카드의 실제 출처와 분류 리더 위치는 독립적이다. AI 카드를 인간 칸에 놓아도 AI 카드의 이미지가 보이며, 이번 작업에서 정답 판정이나 자동 분류는 추가하지 않는다.
-- 미등록 카드·누락 이미지는 이전 이미지를 남기지 않고 해당 칸을 비운다. 파일 누락은 카탈로그 초기화 때 경고한다.
-- GamePanel 진입·재진입 시 게임 인정 상태를 비운다. 기존 물리 배치는 유지하지만 제거 후 다시 태그한 카드만 표시·판정에 사용한다. 비활성화 중에는 구독을 해제한다.
+- Placing a card on the Center reader of GamePanel shows the original in RFIDImageBox.
+- Ai1, Ai2 and Ai3 correspond to the first, second and third Image of AI_ImageGroup.
+- Human1, Human2 and Human3 correspond to the first, second and third Image of Human_ImageGroup.
+- Thumbnails share the same sprite as the original and preserve the image ratio. Existing Image coordinates, sizes and group order are kept.
+- When a card is removed, that Image's sprite is cleared and only the Image is hidden. Empty slot objects stay on, so layout positions are kept.
+- Moving or swapping a card follows the existing RfidInput remove/place events and preserves other slots. Clearing all empties the seven slots.
+- A card's actual origin and the classification reader position are independent. An AI card placed on a Human slot still shows the AI card's image, and this work adds no answer checking or automatic classification.
+- Unregistered cards and missing images clear the slot rather than leaving the previous image. Missing files produce a warning when the catalog initializes.
+- Entering or re-entering GamePanel clears the accepted game state. Existing physical placement is kept, but only cards removed and tagged again are used for display and judging. Subscriptions are released while disabled.
 
-## 카드와 이미지
+## Cards and images
 
-| 카드 ID | Resources 이미지 |
+| Card ID | Resources image (current) |
 | --- | --- |
-| AI_1 | _PROTO/AI1.png |
-| AI_2 | _PROTO/AI2.png |
-| AI_3 | _PROTO/AI3.png |
-| HUMAN_1 | _PROTO/인간1.png |
-| HUMAN_2 | _PROTO/인간2.png |
-| HUMAN_3 | _PROTO/인간3.png |
+| HUMAN_1 | FigmaCards/Card1.png |
+| AI_1 | FigmaCards/Card2.png |
+| HUMAN_2 | FigmaCards/Card3.png |
+| AI_2 | FigmaCards/Card4.png |
+| HUMAN_3 | FigmaCards/Card5.png |
+| AI_3 | FigmaCards/Card6.png |
 
-이미지는 Sprite/Single로 임포트하고 NPOT 리사이즈와 밉맵을 끈다. PNG 내용과 기존 GUID는 보존한다.
+Images are imported as Sprite/Single with NPOT resize and mipmaps off.
 
-RfidCardImageCatalog는 카드 ID와 이미지 조회를, RfidImagePanel은 일곱 UI의 표시와 구독 수명만 담당한다. GamePanel에 RfidImagePanel을 붙이고 previewImage와 두 Image 배열을 Scene 참조로 연결한다. 런타임 상태·리소스 캐시는 직렬화하지 않는다.
+RfidCardImageCatalog handles card ID and image lookup; RfidImagePanel handles only the display and subscription lifetime of the seven UI elements. RfidImagePanel is attached to GamePanel, with previewImage and the two Image arrays wired as scene references. Runtime state and resource caches are not serialized.
 
-콘텐츠 입력은 기존 ContentGate.OnCardChanged를 구독한다. HelpPanel의 보드 비우기 팝업으로 콘텐츠가 차단되는 동안 표시 갱신도 중지하며, 차단 해제 후 새 카드 입력은 정상 반영한다. RFID 테스터 자체와 실물 입력의 공통 진입점 RfidInput은 수정하지 않는다. 실제 UID·통신 연결 추가는 이번 범위 밖이다.
+Content input subscribes to the existing ContentGate.OnCardChanged. Display updates stop while a blocker holds ContentGate, and new card input applies normally after unblocking. RfidInput, the shared entry point for input, was not changed. Adding real UIDs and communication was out of scope for this work.
 
-## 검증
+## Verification
 
-Unity 2022.3.62f3의 1_Game Scene Play Mode에서 실제 RfidTester.DropCard에 각 리더 사각형 중심 좌표를 전달해 여섯 카드 × 일곱 리더 42조합을 검사했다. 정확한 Sprite·빈 슬롯·종횡비·반복 입력·카드 이동·동일 Sprite 공유·교체·제거·모두 내리기·비활성화/재진입·미등록 카드까지 443개 조건을 자동 확인했다. 별도로 HelpPanel 차단·보드 비우기 후 해제·후속 입력 재개를 확인했다.
+In Unity 2022.3.62f3 1_Game scene Play Mode, the center coordinates of each reader rectangle were passed to the real RfidTester.DropCard to test all 42 combinations of six cards and seven readers. 443 conditions were checked automatically, covering exact sprites, empty slots, aspect ratios, repeated input, card moves, shared sprites, swaps, removal, clear all, disable/reentry and unregistered cards. HelpPanel blocking, unblocking after clearing the board and resumed input were checked separately.
 
-Game View 캡처 Temp/RfidImagePreview/GamePanel.png로 중앙 원본과 분류 칸의 동일 이미지 썸네일을 육안 확인했다. 이 검증은 Play Mode의 모의 입력 자동 검사이며 Unity Test Runner의 NUnit 테스트나 실제 마우스/물리 RFID 검증으로 기록하지 않는다. Windows Player 빌드는 미실행이다.
+The center original and same-image classification thumbnails were visually checked in the Game View capture Temp/RfidImagePreview/GamePanel.png. This verification is automated simulated input in Play Mode and is not recorded as Unity Test Runner NUnit tests or as real mouse or physical RFID verification. A Windows Player build was not run.

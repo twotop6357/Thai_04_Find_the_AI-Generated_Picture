@@ -6,13 +6,13 @@ using HuliacDev.App;
 namespace App
 {
     /// <summary>
-    /// 프로젝트 전용 루트 DI 스코프.
-    /// 템플릿 RootLifetimeScope의 로깅·MessagePipe·설정 등록에 더해 씬 매니저 주입 등록을 담당함.
+    /// Project-specific root DI scope.
+    /// Adds scene manager injection on top of the logging, MessagePipe and settings registrations of the template RootLifetimeScope.
     /// </summary>
     public class GameLifetimeScope : RootLifetimeScope
     {
         /// <summary>
-        /// 템플릿 기본 등록(로깅, MessagePipe, AppSettingsProvider)에 프로젝트 매니저 등록을 추가함.
+        /// Adds the project manager registrations to the template defaults (logging, MessagePipe, AppSettingsProvider).
         /// </summary>
         protected override void Configure(IContainerBuilder builder)
         {
@@ -21,7 +21,7 @@ namespace App
         }
 
         /// <summary>
-        /// 씬 계층에 배치된 매니저 컴포넌트를 컨테이너에 등록하여 메서드 주입이 동작하게 함.
+        /// Registers manager components placed in the hierarchy with the container so method injection works.
         /// </summary>
         private void ConfigureManagers(IContainerBuilder builder)
         {

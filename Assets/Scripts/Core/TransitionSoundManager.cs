@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Core
 {
-    /// <summary>화면 전환이 실제로 시작될 때 재생할 효과음. ScreenTransition이 전환을 획득한 뒤에만 요청한다.</summary>
+    /// <summary>Sound played when a screen transition actually starts. ScreenTransition requests it only after acquiring the transition.</summary>
     public enum TransitionSound
     {
         None,
@@ -11,17 +11,17 @@ namespace Core
     }
 
     /// <summary>
-    /// 전환 효과음을 인스펙터에서 할당하는 전역 매니저. GameLifetimeScope 프리팹의 자식이라 씬이 바뀌어도 유지되며,
-    /// 씬 언로드 중에도 효과음이 끊기지 않는다. 클립을 비워 두면 해당 효과음만 재생되지 않는다.
+    /// Global manager for assigning transition sounds in the Inspector. As a child of the GameLifetimeScope prefab it persists across scenes,
+    /// so sounds are not cut off by a scene unload. Leaving a clip empty silences only that sound.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class TransitionSoundManager : MonoBehaviour
     {
-        [Header("버튼 입력으로 화면이 전환될 때")]
+        [Header("When a button press changes the screen")]
         [SerializeField] private AudioClip buttonClip;
         [SerializeField, Range(0f, 1f)] private float buttonVolume = 1f;
 
-        [Header("최초 화면으로 돌아갈 때")]
+        [Header("When returning to the first screen")]
         [SerializeField] private AudioClip returnHomeClip;
         [SerializeField, Range(0f, 1f)] private float returnHomeVolume = 1f;
 

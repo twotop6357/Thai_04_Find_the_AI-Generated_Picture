@@ -1,14 +1,18 @@
-# 프로젝트 안내
+# Project Guide
 
-프로젝트 지침은 이 저장소 안에 기록합니다. 외부 개인 메모리나 계정 연결을 전제하지 않습니다.
+Project instructions are recorded in this repository. They do not assume any external personal memory or account connection.
 
-## 프로젝트 개요
-전시명, 설치 장소, 씬 흐름을 기록합니다.
+## Project overview
+Record the exhibition name, installation site and scene flow here.
 
-## 하드웨어·외부 연동
-센서, RFID, 시리얼, API 엔드포인트를 기록합니다. 비밀 키는 커밋하지 않습니다.
+## Hardware and external integrations
+Record sensors, RFID, serial and API endpoints here. Do not commit secret keys.
 
-## 프로젝트별 규칙
-필요한 개발 및 검증 규칙을 기록합니다.
+- RFID readers: readers are TCP clients and Unity is the server. Settings and card mapping are in `Assets/StreamingAssets/RfidSettings.json`; usage is in `docs/Rfid-Tcp.md`.
+- Game button: `NextButton` in the Input Manager; usage is in `docs/Button-Mapping.md`.
 
-- 프로젝트가 작성하는 모든 Debug.Log/LogWarning/LogError 메시지는 영어와 `[ClassName] message` 형식으로 작성합니다. 주석과 문서는 한국어를 사용할 수 있습니다.
+## Project-specific rules
+Record development and verification rules here.
+
+- All Debug.Log/LogWarning/LogError messages written by the project use English and the `[ClassName] message` format.
+- Comments, documents and asset file names are written in English.

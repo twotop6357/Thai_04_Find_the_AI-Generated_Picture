@@ -16,7 +16,7 @@ namespace Core
         bool IsDisplayReady { get; }
     }
 
-    /// <summary>씬에 종속되지 않는 전환/입력 잠금의 단일 소유자. 패널 내부 연출은 건드리지 않는다.</summary>
+    /// <summary>Scene-independent single owner of transitions and the input lock. Does not touch animations inside panels.</summary>
     public sealed class ScreenTransition : MonoBehaviour
     {
         public const float FadeDuration = 0.5f;
@@ -93,7 +93,7 @@ namespace Core
             _overlay.interactable = false;
         }
 
-        // 일시 정지한 소유 트윈만 직접 진행한다. 씬 로드 프레임의 큰 unscaledDeltaTime을 제한한다.
+        // Advances only its own paused tween and clamps the large unscaledDeltaTime of scene load frames.
         private async UniTask FadeAsync(CanvasGroup group, float alpha, Operation operation, Func<bool> valid)
         {
             var token = operation.Cancellation.Token;
@@ -145,7 +145,7 @@ namespace Core
             var incoming = Group(to);
             operation.Recover = () =>
             {
-                // 이미 퇴장이 완료되었으면 유효한 새 화면, 그 전이면 원래 화면으로 복구한다.
+                // Restore the valid new screen if the exit already finished; otherwise restore the original screen.
                 bool keepNext = to != null && (from == null || (switched && to.activeInHierarchy));
                 ShowImmediate(to, keepNext);
                 ShowImmediate(from, !keepNext);
@@ -154,7 +154,7 @@ namespace Core
             {
                 await host.FadeAsync(outgoing, 0, operation,
                     () => owner != null && owner.isActiveAndEnabled && from != null && from.activeInHierarchy && to != null);
-                // 활성화에 따른 OnEnable도 알파 0 상태에서 실행된다.
+                // OnEnable from this activation also runs at alpha 0.
                 incoming.alpha = 0;
                 from.SetActive(false);
                 to.SetActive(true);
@@ -182,7 +182,7 @@ namespace Core
             }
         }
 
-        /// <summary>준비 실패/취소 시 원래 씬을 보존하기 위해 암전 중에만 가산 로드한다.</summary>
+        /// <summary>Loads additively only while the screen is black, to preserve the original scene if preparation fails or is cancelled.</summary>
         public static async UniTask<bool> SceneAsync(string scenePath, CancellationToken token = default,
             TransitionSound sound = TransitionSound.None)
         {
@@ -212,7 +212,7 @@ namespace Core
                     throw new ArgumentException("Scene is unavailable in Build Settings: " + scenePath);
                 TransitionSoundManager.Play(sound);
                 await host.FadeAsync(host._overlay, 1, operation, () => host.isActiveAndEnabled);
-                // 가산 로드 동안 활성 EventSystem이 겹치지 않게 한다. 취소 시 원래 값으로 복구한다.
+                // Avoid overlapping active EventSystems during the additive load; restore them on cancellation.
                 foreach (var root in previous.GetRootGameObjects())
                     foreach (var input in root.GetComponentsInChildren<EventSystem>())
                         if (input.enabled) { suspendedInput.Add(input); input.enabled = false; }
@@ -223,7 +223,7 @@ namespace Core
                 while (!loading.isDone) await UniTask.NextFrame(cancellationToken: operation.Cancellation.Token);
                 if (!next.IsValid()) next = FindNewScene(handles);
                 if (!next.IsValid()) throw new InvalidOperationException("Loaded scene was not found.");
-                // Start와 비동기 데이터의 표시 준비를 암전 중에 완료한다.
+                // Finish Start and async data display preparation while the screen is black.
                 await UniTask.NextFrame(cancellationToken: operation.Cancellation.Token);
                 var readiness = new List<ISceneDisplayReady>();
                 foreach (var root in next.GetRootGameObjects())
@@ -234,7 +234,7 @@ namespace Core
                 operation.Cancellation.Token.ThrowIfCancellationRequested();
                 SceneManager.SetActiveScene(next);
                 committed = true;
-                // 교체 확정 이후 취소되면 새 씬을 즉시 표시하고 입력을 복구한다.
+                // A cancellation after the swap is committed shows the new scene immediately and restores input.
                 var unload = SceneManager.UnloadSceneAsync(previous);
                 if (unload != null)
                     while (!unload.isDone) await UniTask.NextFrame(cancellationToken: operation.Cancellation.Token);
@@ -256,7 +256,7 @@ namespace Core
             }
             finally
             {
-                // Unity 네이티브 로드는 취소할 수 없으므로 늦게 도착한 가산 씬만 폐기한다.
+                // Unity's native load cannot be cancelled, so only discard the additive scene when it arrives late.
                 if (!committed && loading != null)
                     host.CleanupLoadAsync(loading, handles, previous, onLoaded, suspendedInput).Forget();
                 else
@@ -289,7 +289,7 @@ namespace Core
                 bool restored = false;
                 while (!loading.isDone)
                 {
-                    // 보통 수 프레임 내 완료. 네이티브 로드가 멈춰도 기존 UI 입력은 최대 1초 뒤 복구한다.
+                    // Usually done within a few frames. Even if the native load stalls, existing UI input recovers within one second.
                     if (!restored && Time.realtimeSinceStartup >= inputDeadline)
                     {
                         RestoreInput(suspendedInput);

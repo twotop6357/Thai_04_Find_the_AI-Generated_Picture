@@ -1,19 +1,33 @@
-# 단일 버튼 매핑
+# Single button mapping
 
-게임 실행 중 **F8**을 누르면 Button Settings가 열린다. 에디터와 Windows 실행 파일 모두에서 사용할 수 있으며 씬에 별도로 컴포넌트를 배치할 필요가 없다.
+The game button is read from one axis, **NextButton**, in the Input Manager (`Edit > Project Settings > Input Manager`).
 
-1. **Register button**을 클릭한다.
-2. 사용할 USB 조이스틱·게임패드 버튼 또는 키보드 키를 한 번 누른다.
-3. **Saved** 안내를 확인하고 **Close (F8)**로 닫는다. 등록에 사용한 버튼을 놓은 뒤 다시 눌러 게임을 시작한다.
+| Item | Value |
+| --- | --- |
+| Positive Button (primary input) | `joystick button 0` |
+| Alt Positive Button (secondary input) | `1` (keyboard digit 1) |
+| Joy Num | Get Motion from all Joysticks |
 
-등록 가능한 게임 동작은 **Button 1 하나**다. 새 버튼을 등록하면 이전 매핑을 교체한다. 처음에는 키보드 숫자 1을 사용하며, **Reset to keyboard 1**로 이 기본값을 복원할 수 있다. Esc는 등록 취소·설정 닫기, F8은 설정 열기·닫기, F9는 기존 RFID 테스터용이므로 게임 버튼으로 등록하지 않는다. 마우스 클릭과 스틱 축에서 만들어진 가상 버튼도 등록하지 않는다. 등록 대기는 20초 후 취소되며 이전 매핑을 유지한다.
+Change the values above to change the button. They are stored in `ProjectSettings/InputManager.asset` and included in builds, and cannot be changed at runtime. If the axis is renamed or deleted, `SingleButtonInput` logs one error and blocks button input.
 
-등록한 버튼으로 시작 화면의 짧게 누르기(태국어)·2초 길게 누르기(영어), Game의 정답 제출, Result와 Statistics의 다음 화면 이동을 처리한다. 이전 숫자패드 1·Space·Enter의 별도 진행 경로는 제거했다. 설정을 열고 있거나 버튼을 등록하는 동안에는 게임 입력을 막으며, 닫을 때 누르고 있던 버튼은 놓고 다시 눌러야 동작한다.
+`joystick button 0` corresponds to the Trigger (first HID button) of the DragonRise Generic USB Joystick saved in the old F8 settings. Numpad 1 is not part of the secondary input.
 
-매핑은 `Application.persistentDataPath/thai04-button-binding-v1.json`에 등록 즉시 저장한다. 종료 시점까지 기다리지 않으며, 다음 실행 때 자동으로 불러온다. 저장할 때 임시 파일과 이전 설정의 `.bak`를 사용한다. 저장 실패 시 기존 매핑을 유지하고 설정 창에 실패를 표시한다. 손상된 설정은 백업으로 복구를 시도하며 두 파일 모두 읽을 수 없으면 기본 키보드 1을 사용하고 원본 파일을 보존한다.
+## Button behavior
 
-USB 장치는 일시적인 장치 번호 대신 장치 레이아웃과 버튼 경로를 저장한다. 예를 들어 연결된 DragonRise Generic USB Joystick은 `<HID::DragonRise Inc.   Generic   USB  Joystick  >/button2`와 같은 경로로 저장된다. 동일 모델을 다른 USB 포트로 옮기거나 실행 중 연결을 끊었다 다시 연결해도 매핑은 유지된다. 미연결 시 설정 창은 연결 끊김을 표시하며 다른 버튼으로 임의 교체하지 않는다.
+| Screen | Short press and release | Long press |
+| --- | --- | --- |
+| Title | Move to Tutorial in the current language | Thai ↔ English switch as soon as 2 seconds is reached, staying on Title |
+| Tutorial | None (moves to Game automatically) | None |
+| Game | Submit answers | Return home without submitting when 5 seconds is reached |
+| Result, Statistics | Next screen | Return home when 5 seconds is reached |
+| Finish | None | Return home when 5 seconds is reached |
 
-`Hardware.SingleButtonInput`이 단일 입력·저장·재등록을 담당하고 `ButtonMappingPanel`이 운영자 설정 화면을 제공한다. `ClassificationEntryController`와 `ClassificationResultPanel`은 같은 입력을 사용한다. 씬 전환과 관계없이 입력 인스턴스가 유지된다. 기존 RFID 물리 상태와 통계 저장 형식은 변경하지 않는다.
+On Title, one long press changes the language only once and does not start on release. The language resets to Thai on every entry to the Idle scene.
 
-2026-10-28 Unity Play Mode에서 매핑·취소·이전 키 무효화·연결 해제 및 새 장치 번호로 재연결·실제 게임 화면 전체 진행 35개, 실행 중지와 도메인 리로드를 거친 새 Play Mode 세션에서 저장 매핑 복원·미연결 상태 보존·나중에 연결된 장치 인식·짧게 누르기·기본값 복원 8개, 총 43개 조건을 통과했다. 연결된 USB 조이스틱의 실제 HID 레이아웃을 복제한 가상 장치로 등록을 검사하고, 그 저장 경로가 실제 연결 장치에도 해석되는 것을 확인했다. 통계 제출은 별도 임시 파일을 사용했고 테스트 전 저장 매핑은 복원했다. 검증 코드와 결과는 `Temp/SingleButtonMapping`에 있다. 실제 Windows Player 프로세스 종료·재실행과 사람이 실물 버튼을 누르는 검사는 별도로 수행하지 않았다.
+A button already held when window focus returns or input is re-enabled must be released and pressed again.
+
+## Implementation
+
+`Hardware.SingleButtonInput` persists across scenes and reads `Input.GetButton("NextButton")`. `ClassificationEntryController` and `ClassificationButtonGesture` use the same input to measure press duration.
+
+The old F8 Button Settings and runtime re-registration were removed. `Application.persistentDataPath/thai04-button-binding-v1.json` is no longer read.
