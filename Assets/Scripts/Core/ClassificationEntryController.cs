@@ -25,7 +25,11 @@ namespace Core
         private double pressedAt;
         private int version;
         private CancellationTokenSource cancellation;
+        private static ClassificationEntryController current;
         public bool IsStarting => starting;
+        /// <summary>이미 최초 화면이면 비활동 복귀가 필요 없다.</summary>
+        public static bool IsTitleShowing => current != null && current.isActiveAndEnabled &&
+            current.titlePanel != null && current.titlePanel.activeInHierarchy;
         public static ClassificationLanguage SelectedLanguage { get; private set; } = ClassificationLanguage.Thai;
         /// <summary>The argument is true when the change should play the language fade.</summary>
         public static event Action<bool> LanguageChanged;
@@ -35,10 +39,12 @@ namespace Core
         {
             SelectedLanguage = ClassificationLanguage.Thai;
             LanguageChanged = null;
+            current = null;
         }
 
         private void OnEnable()
         {
+            current = this;
             ++version; starting = false; pressed = false; autoAdvanceRequested = false;
             waitForRelease = IsHeld();
         }
@@ -71,7 +77,7 @@ namespace Core
             if (tutorialPanel.activeInHierarchy && tutorialPresentation != null && tutorialPresentation.IsComplete && !autoAdvanceRequested)
             {
                 autoAdvanceRequested = true;
-                AdvanceAsync(false, version).Forget();
+                AdvanceAsync(false, version, TransitionSound.None).Forget();
                 return;
             }
             if (waitForRelease)
@@ -116,7 +122,7 @@ namespace Core
             else if (tutorialPanel.activeInHierarchy && tutorialPresentation != null && tutorialPresentation.IsComplete)
             {
                 autoAdvanceRequested = true;
-                AdvanceAsync(false, version).Forget();
+                AdvanceAsync(false, version, TransitionSound.Button).Forget();
             }
         }
 
@@ -139,17 +145,17 @@ namespace Core
             if (starting || ScreenTransition.IsBusy) return;
             autoAdvanceRequested = false;
             Debug.Log($"[ClassificationEntryController] Starting {SelectedLanguage} mode.", this);
-            AdvanceAsync(true, version).Forget();
+            AdvanceAsync(true, version, TransitionSound.Button).Forget();
         }
 
-        private async UniTask AdvanceAsync(bool toTutorial, int operationVersion)
+        private async UniTask AdvanceAsync(bool toTutorial, int operationVersion, TransitionSound sound)
         {
             starting = true;
             var source = new CancellationTokenSource(); cancellation = source;
             try
             {
-                if (toTutorial) await ScreenTransition.PanelsAsync(this, titlePanel, tutorialPanel, source.Token);
-                else await ScreenTransition.SceneAsync(gameScenePath, source.Token);
+                if (toTutorial) await ScreenTransition.PanelsAsync(this, titlePanel, tutorialPanel, source.Token, sound);
+                else await ScreenTransition.SceneAsync(gameScenePath, source.Token, sound);
             }
             catch (OperationCanceledException) { }
             catch (Exception exception) { Debug.LogError($"[ClassificationEntryController] Entry transition failed: {exception}", this); }

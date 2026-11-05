@@ -130,7 +130,7 @@ namespace Core
         }
 
         public static async UniTask<bool> PanelsAsync(MonoBehaviour owner, GameObject from, GameObject to,
-            CancellationToken token = default)
+            CancellationToken token = default, TransitionSound sound = TransitionSound.None)
         {
             if (_instance == null || IsBusy || owner == null || !owner.isActiveAndEnabled || from == null || to == null)
                 return false;
@@ -138,6 +138,7 @@ namespace Core
             var host = _instance;
             var operation = host.Acquire(owner, token);
             if (operation == null) return false;
+            TransitionSoundManager.Play(sound);
             bool success = false;
             bool switched = false;
             var outgoing = Group(from);
@@ -182,7 +183,8 @@ namespace Core
         }
 
         /// <summary>준비 실패/취소 시 원래 씬을 보존하기 위해 암전 중에만 가산 로드한다.</summary>
-        public static async UniTask<bool> SceneAsync(string scenePath, CancellationToken token = default)
+        public static async UniTask<bool> SceneAsync(string scenePath, CancellationToken token = default,
+            TransitionSound sound = TransitionSound.None)
         {
             if (_instance == null || IsBusy || _instance._nativeLoadPending) return false;
             var host = _instance;
@@ -208,6 +210,7 @@ namespace Core
                 using var timeout = operation.Cancellation.CancelAfterSlim(TimeSpan.FromSeconds(30), DelayType.Realtime);
                 if (!Application.CanStreamedLevelBeLoaded(scenePath))
                     throw new ArgumentException("Scene is unavailable in Build Settings: " + scenePath);
+                TransitionSoundManager.Play(sound);
                 await host.FadeAsync(host._overlay, 1, operation, () => host.isActiveAndEnabled);
                 // 가산 로드 동안 활성 EventSystem이 겹치지 않게 한다. 취소 시 원래 값으로 복구한다.
                 foreach (var root in previous.GetRootGameObjects())

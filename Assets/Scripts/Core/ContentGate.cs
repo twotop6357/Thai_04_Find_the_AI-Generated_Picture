@@ -93,6 +93,9 @@ namespace Core
                 GameCards.TryGetValue(slot, out string cardId) ? cardId : null;
         }
 
+        /// <summary>현재 GamePanel에서 인식 중인 카드가 하나라도 있는지 여부.</summary>
+        public static bool HasGameCard => _gameInputOwner != null && _gameInputOwner.isActiveAndEnabled && GameCards.Count > 0;
+
         private static void HandleCardChanged(RfidCardEvent cardEvent)
         {
             // 차단 중 제거도 반영해, 팝업이 닫힌 뒤 이전 카드가 되살아나지 않도록 한다.

@@ -13,7 +13,8 @@ namespace Core
     [RequireComponent(typeof(VideoPlayer))]
     public sealed class FinishVideoPresentation : MonoBehaviour, ISceneDisplayReady
     {
-        [SerializeField] private VideoClip clip;
+        [SerializeField] private VideoClip thaiClip;
+        [SerializeField] private VideoClip englishClip;
         [SerializeField] private RawImage videoImage;
         [SerializeField] private CanvasGroup blackBox;
         [SerializeField] private RectTransform removeCardPopup;
@@ -25,8 +26,15 @@ namespace Core
         private bool ended;
         private bool returningToIdle;
         private CancellationTokenSource returnCancellation;
+        private bool playbackFailed;
+        private static FinishVideoPresentation current;
         public bool IsDisplayReady => firstFrameReady;
         public bool IsComplete => ended && (popupAnimation == null || !popupAnimation.IsActive() || !popupAnimation.IsPlaying());
+        /// <summary>영상 재생부터 카드 제거 팝업까지는 비활동 복귀를 멈춘다. 재생 실패 시에는 멈추지 않아 화면에 갇히지 않는다.</summary>
+        public static bool HoldsInactivityReturn => current != null && current.isActiveAndEnabled && !current.playbackFailed;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => current = null;
 
         private void Awake()
         {
@@ -38,19 +46,24 @@ namespace Core
             player.timeUpdateMode = VideoTimeUpdateMode.UnscaledGameTime;
             player.renderMode = VideoRenderMode.RenderTexture;
             player.source = VideoSource.VideoClip;
-            player.clip = clip;
             player.audioOutputMode = VideoAudioOutputMode.Direct;
             videoImage.raycastTarget = false;
         }
 
         private void OnEnable()
         {
+            current = this;
+            playbackFailed = false;
             ResetVisuals();
+            // Finish는 언어 선택 뒤에 로드되며, 언어는 이 씬에서 바뀌지 않는다.
+            VideoClip clip = ClassificationEntryController.SelectedLanguage == ClassificationLanguage.Thai ? thaiClip : englishClip;
             if (clip == null)
             {
-                Debug.LogError("[FinishVideoPresentation] The finish video clip is missing.", this);
+                playbackFailed = true;
+                Debug.LogError($"[FinishVideoPresentation] The {ClassificationEntryController.SelectedLanguage} finish video clip is missing.", this);
                 return;
             }
+            player.clip = clip;
             if (target == null)
             {
                 // This clip is 1080p; do not allocate a second copy or a CPU frame cache.
@@ -99,7 +112,7 @@ namespace Core
             returningToIdle = true;
             var cancellation = new CancellationTokenSource();
             returnCancellation = cancellation;
-            try { await ScreenTransition.SceneAsync("Assets/Scenes/0_Idle.unity", cancellation.Token); }
+            try { await ScreenTransition.SceneAsync("Assets/Scenes/0_Idle.unity", cancellation.Token, TransitionSound.ReturnHome); }
             finally
             {
                 if (returnCancellation == cancellation) returnCancellation = null;
@@ -128,8 +141,9 @@ namespace Core
 
         private void OnError(VideoPlayer source, string message)
         {
-            if (isActiveAndEnabled)
-                Debug.LogError("[FinishVideoPresentation] Video playback failed: " + message, this);
+            if (!isActiveAndEnabled) return;
+            playbackFailed = true;
+            Debug.LogError("[FinishVideoPresentation] Video playback failed: " + message, this);
         }
 
         private void ResetVisuals()

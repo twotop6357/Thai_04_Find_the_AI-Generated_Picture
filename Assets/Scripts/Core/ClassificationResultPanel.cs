@@ -109,7 +109,7 @@ namespace Core
             if (scoreText != null) scoreText.text = $"You got {CorrectCount}\nout of 6 right!";
             if (instructionText != null) instructionText.text = "Press button 1 or the red button to see how others did.";
             statisticsPanel.SetActive(false);
-            ChangePanel(gamePanel, resultPanel);
+            ChangePanel(gamePanel, resultPanel, TransitionSound.Button);
             return true;
         }
 
@@ -125,7 +125,7 @@ namespace Core
             if (!resultPanel.activeInHierarchy) return;
             foreach (var chart in imageCharts) if (chart != null) chart.Refresh(statistics);
             if (statisticsText != null) statisticsText.text = $"All recorded responses on this device, including yours • {statistics.CompletedRounds:N0} completed rounds";
-            ChangePanel(resultPanel, statisticsPanel);
+            ChangePanel(resultPanel, statisticsPanel, TransitionSound.Button);
         }
 
         private async UniTask OpenFinishAsync()
@@ -134,7 +134,7 @@ namespace Core
             int version = ++transitionVersion;
             var cancellation = new CancellationTokenSource();
             finishCancellation = cancellation;
-            try { await ScreenTransition.SceneAsync(finishScenePath, cancellation.Token); }
+            try { await ScreenTransition.SceneAsync(finishScenePath, cancellation.Token, TransitionSound.Button); }
             finally
             {
                 if (finishCancellation == cancellation) finishCancellation = null;
@@ -160,20 +160,20 @@ namespace Core
         }
 
 
-        private void ChangePanel(GameObject from, GameObject to)
+        private void ChangePanel(GameObject from, GameObject to, TransitionSound sound = TransitionSound.None)
         {
             if (to == resultPanel && presentation != null) presentation.HideForEntry();
             if (to == statisticsPanel && statisticsPresentation != null) statisticsPresentation.HideForEntry();
             transitioning = true;
             int version = ++transitionVersion;
-            ChangePanelAsync(from, to, version).Forget();
+            ChangePanelAsync(from, to, version, sound).Forget();
         }
 
-        private async UniTask ChangePanelAsync(GameObject from, GameObject to, int version)
+        private async UniTask ChangePanelAsync(GameObject from, GameObject to, int version, TransitionSound sound)
         {
             try
             {
-                bool completed = await ScreenTransition.PanelsAsync(this, from, to);
+                bool completed = await ScreenTransition.PanelsAsync(this, from, to, default, sound);
                 if (version != transitionVersion || !isActiveAndEnabled) return;
                 if (!completed) RestoreRoundPanel();
                 else if (to == resultPanel && presentation != null) presentation.Play();

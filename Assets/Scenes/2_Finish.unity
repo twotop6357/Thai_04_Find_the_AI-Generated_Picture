@@ -896,7 +896,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4af19e3f8bed11f43b1a17e06e88d0ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clip: {fileID: 32900000, guid: 18accefd9d33a8e40a5b407541341c30, type: 3}
+  thaiClip: {fileID: 32900000, guid: 55e805e5301b32b4a9b1c097b9dc78da, type: 3}
+  englishClip: {fileID: 32900000, guid: 7d00b9cde1196f042af7c4f617c0a7d3, type: 3}
   videoImage: {fileID: 1452458222}
   blackBox: {fileID: 383159072}
   removeCardPopup: {fileID: 1463957221}
@@ -908,7 +909,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2122100214}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 18accefd9d33a8e40a5b407541341c30, type: 3}
+  m_VideoClip: {fileID: 32900000, guid: 55e805e5301b32b4a9b1c097b9dc78da, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
