@@ -1424,7 +1424,7 @@ MonoBehaviour:
   incorrectSprite: {fileID: 21300000, guid: 05fdcaf11409ca04893c2c7b3f0e24f3, type: 3}
   instruction: {fileID: 1304257172}
   englishScorePosition: {x: 107, y: -213}
-  thaiScorePosition: {x: 68, y: -217}
+  thaiScorePosition: {x: 66, y: -213}
 --- !u!1 &132751114
 GameObject:
   m_ObjectHideFlags: 0

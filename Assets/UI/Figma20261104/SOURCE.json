@@ -4,5 +4,11 @@
   "method": "Browser UI export, 149 PNG layers in one ZIP; Figma file unchanged",
   "tutorialImages": "English E04-S02, six paintings shared by Thai and English",
   "dynamicContent": "RFID pictures, scores, percentages and bars remain live",
-  "sourceZip": "[NSM_D.N.A Mobile Exhibit] KIOSK_UI (3).zip"
+  "sourceZip": "[NSM_D.N.A Mobile Exhibit] KIOSK_UI (3).zip",
+  "thaiRefresh": {
+    "date": "2026-11-09",
+    "method": "Browser export of program 04 TH frames and layers; Figma file unchanged",
+    "replaced": "Thai TitleText, TutorialBackground, GameBackground, GameInstruction, AnswerBoard, ResultInstruction, Score0-6, StatisticsBackground, StatisticsInstruction, RemoveCards, VideoHome",
+    "unchanged": "English and Shared images already matched Figma"
+  }
 }

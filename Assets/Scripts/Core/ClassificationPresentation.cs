@@ -16,7 +16,7 @@ namespace Core
         [SerializeField] private Sprite incorrectSprite;
         [SerializeField] private CanvasGroup instruction;
         [SerializeField] private Vector2 englishScorePosition = new Vector2(107, -213);
-        [SerializeField] private Vector2 thaiScorePosition = new Vector2(68, -217);
+        [SerializeField] private Vector2 thaiScorePosition = new Vector2(66, -213);
         private readonly Vector2[] restingPositions = new Vector2[6];
         private readonly Quaternion[] restingRotations = new Quaternion[6];
         private bool captured;
