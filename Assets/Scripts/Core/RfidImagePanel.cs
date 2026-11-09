@@ -89,7 +89,8 @@ namespace Core
             for (int i = 0; i < 6; i++)
             {
                 string id = ContentGate.GetGameCard((RfidReaderSlot)(i + 1));
-                Sprite sprite = catalog.GetImage(id);
+                // AI and Human slots show the whole card with its printed layout; the center preview shows the picture.
+                Sprite sprite = catalog.GetLayoutImage(id);
                 SetPhoto(photos[i], sprite);
                 if (RfidCardCatalog.GetCardType(id) == RfidCardType.Unknown || sprite == null) complete = false;
             }
