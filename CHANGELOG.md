@@ -28,7 +28,7 @@ Records changes that affect the visitor or operator experience. The format follo
 ### Changed
 - When changing language, the background stays while the current language's text and button guide fade out over 0.5 seconds and the new language's text and guide fade in over 0.5 seconds.
 - Moved the game button to `NextButton` in the Input Manager. The primary input is `joystick button 0` and the secondary input is keyboard digit 1. The button is changed in the Input Manager; the F8 button settings screen and runtime re-registration are no longer provided.
-- Holding the button for 2 seconds on Title switches between Thai and English while staying on the screen, and a short press starts in the current language. The language resets to Thai on every entry to Idle.
+- Holding the button for 2 seconds on Title switches between Thai and English while staying on the screen, and a short press starts in the current language. Returning to Idle keeps the language of the last experience; the app starts in Thai.
 
 ## [2026-10-27]
 

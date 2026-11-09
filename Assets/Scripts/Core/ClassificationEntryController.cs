@@ -51,8 +51,7 @@ namespace Core
 
         private void Start()
         {
-            // Every visitor starts in Thai, even if the previous visitor switched to English.
-            SetLanguage(ClassificationLanguage.Thai, false);
+            // Keep the language of the last experience; the app itself starts in Thai.
             // Preserve the designer's editor visibility, but always enter the experience at Title.
             ScreenTransition.ShowImmediate(tutorialPanel, false);
             ScreenTransition.ShowImmediate(titlePanel, true);

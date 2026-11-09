@@ -22,7 +22,7 @@ Change the values above to change the button. They are stored in `ProjectSetting
 | Result, Statistics | Next screen | Return home when 5 seconds is reached |
 | Finish | None | Return home when 5 seconds is reached |
 
-On Title, one long press changes the language only once and does not start on release. The language resets to Thai on every entry to the Idle scene.
+On Title, one long press changes the language only once and does not start on release. Returning to the Idle scene keeps the language of the last experience; the app starts in Thai.
 
 A button already held when window focus returns or input is re-enabled must be released and pressed again.
 
