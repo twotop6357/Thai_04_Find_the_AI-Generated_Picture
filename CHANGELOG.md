@@ -1,6 +1,11 @@
 # Changelog
 Records changes that affect the visitor or operator experience. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2026-11-09]
+
+### Added
+- `TransitionSoundManager` plays `language.mp3` when a 2-second hold on Title switches the language, and `selected.mp3` when GamePanel accepts a registered card on any reader (Center, AI or Human). Unregistered cards, the same card read again, removals, cards placed outside GamePanel and cards ignored while the F10 mapping window is open stay silent.
+
 ## [2026-11-05]
 
 ### Added

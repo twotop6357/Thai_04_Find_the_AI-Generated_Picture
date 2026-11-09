@@ -93,6 +93,7 @@ namespace Core
                     pressed = false; waitForRelease = true;
                     SetLanguage(SelectedLanguage == ClassificationLanguage.Thai
                         ? ClassificationLanguage.English : ClassificationLanguage.Thai, true);
+                    TransitionSoundManager.Play(TransitionSound.LanguageChange);
                     return;
                 }
                 if (held)

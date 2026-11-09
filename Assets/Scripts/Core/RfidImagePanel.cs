@@ -71,7 +71,7 @@ namespace Core
             if (!initialized) return;
             ClearVisuals();
             ContentGate.BeginGameInput(this);
-            subscription = ContentGate.OnCardChanged.Subscribe(_ => RefreshImages());
+            subscription = ContentGate.OnCardChanged.Subscribe(HandleCardChanged);
             RefreshImages();
         }
 
@@ -79,6 +79,14 @@ namespace Core
         {
             // Also reconcile the final unblock event intentionally suppressed by ContentGate.
             if (initialized) RefreshImages();
+        }
+
+        private void HandleCardChanged(RfidCardEvent cardEvent)
+        {
+            // ContentGate forwards only events GamePanel accepts (input active, no popup). Play only for a newly placed registered card with an image.
+            if (cardEvent.IsPlaced && cardEvent.CardType != RfidCardType.Unknown && catalog.GetImage(cardEvent.CardId) != null)
+                TransitionSoundManager.Play(TransitionSound.CardSelected);
+            RefreshImages();
         }
 
         private void RefreshImages()

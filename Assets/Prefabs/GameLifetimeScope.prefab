@@ -48,6 +48,10 @@ MonoBehaviour:
   buttonVolume: 1
   returnHomeClip: {fileID: 8300000, guid: e4e745b0dec003a42aa54c5e3f3757e0, type: 3}
   returnHomeVolume: 1
+  languageClip: {fileID: 8300000, guid: cc0a2ac0a6279754aae693ee4d51b7e7, type: 3}
+  languageVolume: 1
+  selectedClip: {fileID: 8300000, guid: e157a440f262dd34b9a0610f4d14f98c, type: 3}
+  selectedVolume: 1
 --- !u!1 &3547783380239404400
 GameObject:
   m_ObjectHideFlags: 0
