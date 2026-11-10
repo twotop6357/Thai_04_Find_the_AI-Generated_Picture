@@ -4,6 +4,7 @@ Records changes that affect the visitor or operator experience. The format follo
 ## [2026-11-09]
 
 ### Added
+- On Title, a card on any reader shows the "remove all the cards to Start" popup with the same backdrop fade and pop entrance as the Finish popup. Every button action (start and the language switch) waits until every reader is empty, and the popup closes as soon as the board is clear. Tutorial does not show the popup. Thai and English use the same English image for now; a Thai image can be assigned to the popup pair in the Idle Canvas `ClassificationUiLanguage`.
 - `TransitionSoundManager` plays `language.mp3` when a 2-second hold on Title switches the language, and `selected.mp3` when GamePanel accepts a registered card on any reader (Center, AI or Human). Unregistered cards, the same card read again, removals, cards placed outside GamePanel and cards ignored while the F10 mapping window is open stay silent.
 
 ## [2026-11-05]

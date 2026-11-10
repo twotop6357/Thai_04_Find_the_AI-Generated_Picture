@@ -69,7 +69,9 @@ namespace Core
             {
                 pressed = false; waitForRelease = true; return;
             }
-            if (starting || ScreenTransition.IsBusy || ClassificationUiLanguage.IsFading || RfidMappingWindow.IsOpen)
+            // While the Title remove-cards popup is up, starting and the language switch wait until the cards are removed.
+            if (starting || ScreenTransition.IsBusy || ClassificationUiLanguage.IsFading || RfidMappingWindow.IsOpen ||
+                StartRemoveCardPopup.BlocksStart)
             {
                 pressed = false; waitForRelease = held; return;
             }
@@ -117,7 +119,7 @@ namespace Core
         public void PressButton1()
         {
             if (!isActiveAndEnabled || starting || ScreenTransition.IsBusy ||
-                ClassificationUiLanguage.IsFading || RfidMappingWindow.IsOpen) return;
+                ClassificationUiLanguage.IsFading || RfidMappingWindow.IsOpen || StartRemoveCardPopup.BlocksStart) return;
             if (titlePanel.activeInHierarchy) StartTutorial();
             else if (tutorialPanel.activeInHierarchy && tutorialPresentation != null && tutorialPresentation.IsComplete)
             {
