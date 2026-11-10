@@ -3,8 +3,12 @@ Records changes that affect the visitor or operator experience. The format follo
 
 ## [2026-11-10]
 
+### Added
+- Title plays `Resources/Videos/c04.mp4` as a silent looping background. `Shared/TitleBackground.png` is now the video's first frame as Unity decodes it and stays underneath until the first video frame is ready, so the screen never flashes.
+
 ### Changed
 - The top-right NSM logo is a separate image (`Shared/Logo.png`, Figma 1x export) placed at (1746, 40) on Title, Tutorial, Game, Result and Statistics. It was removed from the Tutorial, Game, Answer and Statistics backgrounds by exporting temporary Figma clones without the logo; the Figma originals are unchanged.
+- The English Title text overlay is rebuilt from the Figma title layers so it composites correctly over the video, like the Thai one.
 
 ## [2026-11-09]
 
