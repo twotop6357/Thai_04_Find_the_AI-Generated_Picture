@@ -10,5 +10,11 @@
     "method": "Browser export of program 04 TH frames and layers; Figma file unchanged",
     "replaced": "Thai TitleText, TutorialBackground, GameBackground, GameInstruction, AnswerBoard, ResultInstruction, Score0-6, StatisticsBackground, StatisticsInstruction, RemoveCards, VideoHome",
     "unchanged": "English and Shared images already matched Figma"
+  },
+  "logoSeparation": {
+    "date": "2026-11-10",
+    "logo": "Shared/Logo.png, 1x export of the top-right logo (438:2528), placed at (1746, 40)",
+    "method": "Temporary clones of each frame kept only the layers each background already contained, minus the logo; only the logo area was patched, then every clone was deleted and the originals were checked unchanged",
+    "patched": "English/Thai TutorialBackground, GameBackground, StatisticsBackground and English/AnswerPanelBackground"
   }
 }

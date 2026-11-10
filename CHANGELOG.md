@@ -1,6 +1,11 @@
 # Changelog
 Records changes that affect the visitor or operator experience. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2026-11-10]
+
+### Changed
+- The top-right NSM logo is a separate image (`Shared/Logo.png`, Figma 1x export) placed at (1746, 40) on Title, Tutorial, Game, Result and Statistics. It was removed from the Tutorial, Game, Answer and Statistics backgrounds by exporting temporary Figma clones without the logo; the Figma originals are unchanged.
+
 ## [2026-11-09]
 
 ### Added
