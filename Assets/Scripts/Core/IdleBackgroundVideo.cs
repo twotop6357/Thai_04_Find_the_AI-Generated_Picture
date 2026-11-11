@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using Debug = UnityEngine.Debug;
 
 namespace Core
 {
@@ -17,10 +19,18 @@ namespace Core
     [DisallowMultipleComponent]
     public sealed class IdleBackgroundVideo : MonoBehaviour
     {
+        /// <summary>
+        /// Seconds after a switch before the finished player is restarted. Restarting a hardware decoder can block
+        /// the main thread on integrated GPUs, so it is kept away from the loop point.
+        /// </summary>
+        private const double RestartDelaySeconds = 0.5;
+        /// <summary>Seconds between diagnostics summary lines in Player.log (development builds: every minute).</summary>
+        private const double DiagnosticsIntervalSeconds = 600;
+
         [SerializeField] private VideoClip clip;
         [SerializeField] private RawImage videoImage;
 
-        private enum SlotState { Idle, WaitingForFirstFrame, Pausing, Checking, Ready, Playing }
+        private enum SlotState { Idle, Finished, Stopped, WaitingForFirstFrame, Pausing, Checking, Ready, Playing }
 
         /// <summary>One decoder, its render target and a 1x1 texture used to check that the first frame arrived.</summary>
         private sealed class Slot
@@ -29,14 +39,18 @@ namespace Core
             public RenderTexture Target;
             public RenderTexture Check;
             public SlotState State;
-            /// <summary>Time.frameCount when frameReady reported the first frame.</summary>
-            public int FirstFrameEventAt;
+            /// <summary>Unscaled time (seconds) when a Finished slot is restarted.</summary>
+            public double RestartAt;
+            /// <summary>Time.frameCount of the last state step, so Stop, Play and Pause land on different frames.</summary>
+            public int StepFrame;
             /// <summary>Incremented on every restart so a late readback from an earlier attempt is ignored.</summary>
             public int Attempt;
         }
 
         private readonly Slot[] slots = { new Slot(), new Slot() };
+        private readonly Stopwatch callTimer = new Stopwatch();
         private VideoPlayer addedPlayer;
+        private VideoLoopDiagnostics diagnostics;
         /// <summary>Index of the slot on screen, or -1 before the first frame.</summary>
         private int active = -1;
         /// <summary>Unscaled time (seconds) the last frame of the active slot was first seen, or -1.</summary>
@@ -62,7 +76,8 @@ namespace Core
             player.playOnAwake = false;
             player.isLooping = false;
             player.waitForFirstFrame = true;
-            player.skipOnDrop = true;
+            // Late frames are shown late rather than skipped: a skip reads as a jump in a slow background loop.
+            player.skipOnDrop = false;
             player.timeUpdateMode = VideoTimeUpdateMode.UnscaledGameTime;
             player.renderMode = VideoRenderMode.RenderTexture;
             player.source = VideoSource.VideoClip;
@@ -81,6 +96,8 @@ namespace Core
             }
             lastFrame = (long)clip.frameCount - 1;
             frameSeconds = clip.frameRate > 0 ? 1.0 / clip.frameRate : 1.0 / 30.0;
+            VideoLoopDiagnostics.LogEnvironmentOnce(this);
+            diagnostics = new VideoLoopDiagnostics(this, frameSeconds, Debug.isDebugBuild ? 60 : DiagnosticsIntervalSeconds);
             for (int i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];
@@ -102,23 +119,35 @@ namespace Core
                 slot.Player.targetTexture = slot.Target;
                 slot.Player.frameReady += OnFrameReady;
                 slot.Player.errorReceived += OnError;
-                Preroll(slot);
+                Stop(slot);
             }
         }
 
-        /// <summary>Restarts the slot from a fresh decoder; it is paused on frame 0 once that frame is in the target.</summary>
-        private static void Preroll(Slot slot)
+        /// <summary>First half of a restart: stops the decoder. Play follows on a later frame.</summary>
+        private void Stop(Slot slot)
         {
             ++slot.Attempt;
-            slot.State = SlotState.WaitingForFirstFrame;
+            slot.State = SlotState.Stopped;
+            slot.StepFrame = Time.frameCount;
+            callTimer.Restart();
             slot.Player.Stop();
+            diagnostics?.RecordCall(callTimer.Elapsed.TotalMilliseconds);
+        }
+
+        /// <summary>Second half of a restart: clears the target and plays from frame 0.</summary>
+        private void Play(Slot slot)
+        {
             // Clear to transparent so the check below can tell a delivered frame (opaque) from a missing one.
             var previous = RenderTexture.active;
             RenderTexture.active = slot.Target;
             GL.Clear(false, true, Color.clear);
             RenderTexture.active = previous;
+            slot.State = SlotState.WaitingForFirstFrame;
+            slot.StepFrame = Time.frameCount;
             slot.Player.sendFrameReadyEvents = true;
+            callTimer.Restart();
             slot.Player.Play();
+            diagnostics?.RecordCall(callTimer.Elapsed.TotalMilliseconds);
         }
 
         private void OnFrameReady(VideoPlayer source, long frame)
@@ -126,76 +155,87 @@ namespace Core
             var slot = Find(source);
             if (slot == null || slot.State != SlotState.WaitingForFirstFrame) return;
             source.sendFrameReadyEvents = false;
-            slot.FirstFrameEventAt = Time.frameCount;
+            slot.StepFrame = Time.frameCount;
             slot.State = SlotState.Pausing;
         }
 
         /// <summary>
-        /// frameReady can arrive before the frame is copied into the render target, so the pause waits one rendered
-        /// frame. Occasionally the restarted player never copies frame 0 at all; a 1x1 GPU readback confirms the
-        /// target is opaque, and an empty target is prepared again instead of being shown.
+        /// Moves a slot that is not on screen one step toward Ready. frameReady can arrive before the frame is copied
+        /// into the render target, so the pause waits one rendered frame. Occasionally the restarted player never
+        /// copies frame 0 at all; a 1x1 GPU readback confirms the target is opaque, and an empty target is restarted.
         /// </summary>
-        private void AdvancePreroll(Slot slot)
+        private void AdvanceSlot(Slot slot, double now)
         {
-            if (slot.State != SlotState.Pausing || Time.frameCount <= slot.FirstFrameEventAt) return;
-            if (slot.Player.frame > 0)
+            if (Time.frameCount <= slot.StepFrame) return;
+            switch (slot.State)
             {
-                // A hitch let the player run past frame 0.
-                Preroll(slot);
-                return;
+                case SlotState.Finished:
+                    if (now >= slot.RestartAt) Stop(slot);
+                    break;
+                case SlotState.Stopped:
+                    Play(slot);
+                    break;
+                case SlotState.Pausing:
+                    if (slot.Player.frame > 0)
+                    {
+                        // A hitch let the player run past frame 0.
+                        Stop(slot);
+                        break;
+                    }
+                    slot.Player.Pause();
+                    if (!canCheckFrames)
+                    {
+                        slot.State = SlotState.Ready;
+                        break;
+                    }
+                    slot.State = SlotState.Checking;
+                    Graphics.Blit(slot.Target, slot.Check);
+                    int attempt = slot.Attempt;
+                    AsyncGPUReadback.Request(slot.Check, 0, TextureFormat.RGBA32, request => OnChecked(slot, attempt, request));
+                    break;
             }
-            slot.Player.Pause();
-            if (!canCheckFrames)
-            {
-                slot.State = SlotState.Ready;
-                return;
-            }
-            slot.State = SlotState.Checking;
-            Graphics.Blit(slot.Target, slot.Check);
-            int attempt = slot.Attempt;
-            AsyncGPUReadback.Request(slot.Check, 0, TextureFormat.RGBA32, request => OnChecked(slot, attempt, request));
         }
 
         private void OnChecked(Slot slot, int attempt, AsyncGPUReadbackRequest request)
         {
             if (this == null || !isActiveAndEnabled || slot.Attempt != attempt || slot.State != SlotState.Checking) return;
-            if (request.hasError)
+            if (request.hasError || request.GetData<byte>()[3] >= 250)
             {
-                // The check itself failed; trust the player rather than stall the loop.
+                // A failed check trusts the player rather than stall the loop.
                 slot.State = SlotState.Ready;
                 return;
             }
-            if (request.GetData<byte>()[3] >= 250)
-            {
-                slot.State = SlotState.Ready;
-                return;
-            }
-            Debug.Log("[IdleBackgroundVideo] The first frame did not reach the render target; preparing that player again.", this);
-            Preroll(slot);
+            diagnostics?.RecordRetry();
+            Stop(slot);
         }
 
         private void Update()
         {
             if (failed) return;
-            foreach (var slot in slots) AdvancePreroll(slot);
+            double now = Time.unscaledTimeAsDouble;
+            foreach (var slot in slots) AdvanceSlot(slot, now);
             if (active < 0)
             {
                 if (slots[0].State == SlotState.Ready) Show(0);
                 return;
             }
             var current = slots[active];
-            if (current.Player.frame < lastFrame)
+            long frame = current.Player.frame;
+            diagnostics.SampleShownFrame(frame);
+            if (frame < lastFrame)
             {
                 lastFrameSeenAt = -1;
                 return;
             }
-            double now = Time.unscaledTimeAsDouble;
             if (lastFrameSeenAt < 0) lastFrameSeenAt = now;
             // Hold the last frame for one frame duration; if the next slot is late, keep holding rather than jump.
             if (now - lastFrameSeenAt + 0.001 >= frameSeconds && slots[1 - active].State == SlotState.Ready)
             {
+                diagnostics.RecordLoop(now - lastFrameSeenAt);
+                current.State = SlotState.Finished;
+                current.RestartAt = now + RestartDelaySeconds;
+                current.StepFrame = Time.frameCount;
                 Show(1 - active);
-                Preroll(current);
             }
         }
 
@@ -245,6 +285,7 @@ namespace Core
                 ++slot.Attempt;
             }
             active = -1;
+            diagnostics = null;
         }
 
         private void OnDestroy()

@@ -4,6 +4,7 @@ Records changes that affect the visitor or operator experience. The format follo
 ## [2026-11-11]
 
 ### Fixed
+- The Title background video stays smooth on integrated GPUs: `c04.mp4` is H.264 level 4.1 so hardware decoders accept it, late frames are no longer skipped, and the idle player restarts away from the loop point. Player.log gets a GPU/VSync line at start and a playback summary every 10 minutes. Keep `targetFrameRate` at 0 in `Settings.json`, because a set value turns VSync off and tears the video.
 - The Title background video loops without a visible jump: playback alternates between two players instead of seeking back to the start, and `c04.mp4` is re-encoded so the background stays steady across the loop point.
 
 ### Changed
