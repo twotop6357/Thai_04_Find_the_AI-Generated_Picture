@@ -1,6 +1,11 @@
 # Changelog
 Records changes that affect the visitor or operator experience. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2026-11-11]
+
+### Changed
+- Thai Title subtitle and the Thai result board "Human" label follow the updated Figma font and line breaks.
+
 ## [2026-11-10]
 
 ### Added
