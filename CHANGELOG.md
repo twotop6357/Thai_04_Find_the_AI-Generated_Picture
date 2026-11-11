@@ -3,6 +3,9 @@ Records changes that affect the visitor or operator experience. The format follo
 
 ## [2026-11-11]
 
+### Fixed
+- The Title background video loops without a visible jump: playback alternates between two players instead of seeking back to the start, and `c04.mp4` is re-encoded so the background stays steady across the loop point.
+
 ### Changed
 - Thai Title subtitle and the Thai result board "Human" label follow the updated Figma font and line breaks.
 
