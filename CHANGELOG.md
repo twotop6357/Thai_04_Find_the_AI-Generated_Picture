@@ -1,6 +1,11 @@
 # Changelog
 Records changes that affect the visitor or operator experience. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2026-11-17]
+
+### Changed
+- The Finish videos `FinishVideo_English.mp4` and `FinishVideo_Thai.mp4` are replaced with new versions that include narration.
+
 ## [2026-11-11]
 
 ### Fixed
